@@ -2,7 +2,7 @@
 %define __cert_file %{__conf_dir}/dummy.crt
 %define __key_file %{__conf_dir}/dummy.pem
 
-Name: nodeconductor-plus
+Name: nodeconductor-saml2
 Summary: SAML2 plugin for NodeConductor
 Group: Development/Libraries
 Version: 0.1.0
@@ -13,7 +13,7 @@ Source0: %{name}-%{version}.tar.gz
 
 # openssl package is needed to generate SAML2 keys during plugin install
 # xmlsec1-openssl package is needed for SAML2 features to work
-Requires: nodeconductor >= 0.75
+Requires: nodeconductor >= 0.73
 Requires: openssl
 Requires: python-django-saml2 = 0.13.0
 Requires: xmlsec1-openssl

@@ -37,12 +37,16 @@ rm -rf %{buildroot}
 python setup.py install --single-version-externally-managed -O1 --root=%{buildroot} --record=INSTALLED_FILES
 
 mkdir -p %{buildroot}%{__conf_dir}
+echo "%{__conf_dir}" >> INSTALLED_FILES
+
 cp -r attribute-maps %{buildroot}%{__conf_dir}/
+
+cat INSTALLED_FILES | sort | uniq > INSTALLED_FILES_CLEAN
 
 %clean
 rm -rf %{buildroot}
 
-%files -f INSTALLED_FILES
+%files -f INSTALLED_FILES_CLEAN
 %defattr(-,root,root)
 
 %post

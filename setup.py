@@ -4,14 +4,14 @@ from setuptools import setup, find_packages
 
 
 install_requires = [
-    'nodeconductor>=0.75.0',
+    'nodeconductor>=0.77.0',
     'djangosaml2==0.13.0',
 ]
 
 
 setup(
     name='nodeconductor-saml2',
-    version='0.1.0',
+    version='0.1.1',
     author='OpenNode Team',
     author_email='info@opennodecloud.com',
     url='http://nodeconductor.com',
@@ -20,7 +20,7 @@ setup(
     packages=find_packages('src'),
     install_requires=install_requires,
     entry_points={
-        'nodeconductor_extensions': ('saml2 = nodeconductor_saml2.urls',)
+        'nodeconductor_extensions': ('nodeconductor_saml2 = nodeconductor_saml2.urls',)
     },
     zip_safe=False,
     include_package_data=True,

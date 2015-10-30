@@ -1,5 +1,7 @@
-from django.conf.urls import patterns
+from django.conf.urls import patterns, url
 
-urlpatterns += patterns(
-    url(r'^api-auth/saml2/', 'nodeconductor_saml2.views.assertion_consumer_service'),
+from .views import Saml2AuthView
+
+urlpatterns = patterns('',
+    url(r'^api-auth/saml2/', Saml2AuthView.as_view()),
 )

@@ -11,7 +11,7 @@ install_requires = [
 
 setup(
     name='nodeconductor-saml2',
-    version='0.1.2',
+    version='0.1.3',
     author='OpenNode Team',
     author_email='info@opennodecloud.com',
     url='http://nodeconductor.com',
@@ -20,7 +20,7 @@ setup(
     packages=find_packages('src'),
     install_requires=install_requires,
     entry_points={
-        'nodeconductor_extensions': ('nodeconductor_saml2 = nodeconductor_saml2.urls',)
+        'nodeconductor_extensions': ('nodeconductor_saml2 = nodeconductor_saml2.extension:SAML2Extension',)
     },
     zip_safe=False,
     include_package_data=True,

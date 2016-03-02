@@ -3,8 +3,12 @@
 from setuptools import setup, find_packages
 
 
+dev_requires = [
+    'Sphinx==1.2.2',
+]
+
 install_requires = [
-    'nodeconductor>=0.78.0',
+    'nodeconductor>=0.81.0',
     'djangosaml2==0.13.0',
 ]
 
@@ -15,20 +19,26 @@ setup(
     author='OpenNode Team',
     author_email='info@opennodecloud.com',
     url='http://nodeconductor.com',
-    description='SAML2 plugin for NodeConductor',
+    description='NodeConductor plugin bringing SAML2-based authentication support.',
+    long_description=open('README.rst').read(),
     package_dir={'': 'src'},
-    packages=find_packages('src'),
+    packages=find_packages('src', exclude=['*.tests', '*.tests.*', 'tests.*', 'tests']),
     install_requires=install_requires,
-    entry_points={
-        'nodeconductor_extensions': ('nodeconductor_saml2 = nodeconductor_saml2.extension:SAML2Extension',)
-    },
     zip_safe=False,
+    extras_require={
+        'dev': dev_requires,
+    },
+    entry_points={
+        'nodeconductor_extensions': (
+            'nodeconductor_saml2 = nodeconductor_saml2.extension:SAML2Extension',
+        ),
+    },
     include_package_data=True,
     classifiers=[
         'Framework :: Django',
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',
-        'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
-    ]
+        'License :: Apache v2',
+    ],
 )

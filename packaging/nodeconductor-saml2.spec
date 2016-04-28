@@ -6,7 +6,7 @@
 Name: nodeconductor-saml2
 Summary: SAML2 plugin for NodeConductor
 Group: Development/Libraries
-Version: 0.1.3
+Version: 0.1.4
 Release: 1.el7
 License: Copyright 2015 OpenNode LLC.  All rights reserved.
 Url: http://nodeconductor.com
@@ -63,6 +63,9 @@ if [ "$1" = 1 ]; then
 fi
 
 %changelog
+* Thu Apr 28 2016 Jenkins <jenkins@opennodecloud.com> - 0.1.4-1.el7
+- New upstream release
+
 * Sun Nov 22 2015 Jenkins <jenkins@opennodecloud.com> - 0.1.3-1.el7
 - New upstream release
 

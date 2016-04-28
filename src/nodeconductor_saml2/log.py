@@ -1,5 +1,5 @@
 from nodeconductor.core.models import User
-from nodeconductor.logging.log import EventLogger, event_logger
+from nodeconductor.logging.loggers import EventLogger, event_logger
 
 
 class Saml2AuthEventLogger(EventLogger):

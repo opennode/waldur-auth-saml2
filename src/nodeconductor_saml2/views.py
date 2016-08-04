@@ -12,6 +12,7 @@ from rest_framework.views import APIView
 from saml2 import BINDING_HTTP_POST
 from saml2.client import Saml2Client
 
+from nodeconductor.core.views import RefreshTokenMixin
 from nodeconductor.core.serializers import Base64Field
 from nodeconductor_saml2.log import event_logger
 
@@ -23,7 +24,7 @@ class Saml2ResponseSerializer(serializers.Serializer):
     saml2response = Base64Field(required=True)
 
 
-class Saml2AuthView(APIView):
+class Saml2AuthView(RefreshTokenMixin, APIView):
     throttle_classes = ()
     permission_classes = ()
     serializer_class = Saml2ResponseSerializer
@@ -91,7 +92,7 @@ class Saml2AuthView(APIView):
 
         post_authenticated.send_robust(sender=user, session_info=session_info)
 
-        token, _ = Token.objects.get_or_create(user=user)
+        token = self.refresh_token(user)
 
         logger.info('Authenticated with SAML token. Returning token for successful login of user %s', user)
         event_logger.saml2_auth.info(

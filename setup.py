@@ -15,7 +15,7 @@ install_requires = [
 
 setup(
     name='nodeconductor-saml2',
-    version='0.2.1',
+    version='0.2.2',
     author='OpenNode Team',
     author_email='info@opennodecloud.com',
     url='http://nodeconductor.com',
@@ -39,6 +39,6 @@ setup(
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',
         'Operating System :: OS Independent',
-        'License :: Apache v2',
+        'License :: OSI Approved :: Apache Software License',
     ],
 )

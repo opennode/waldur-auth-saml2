@@ -3,7 +3,7 @@ import logging
 from django.conf import settings
 from django.contrib import auth
 from django.http import HttpResponseRedirect
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.csrf import csrf_exempt
 from djangosaml2.cache import OutstandingQueriesCache, IdentityCache, StateCache
 from djangosaml2.conf import get_config
@@ -50,18 +50,18 @@ class Saml2LoginView(APIView):
 
         conf = get_config(request=request)
         sign_requests = getattr(conf, '_sp_authn_requests_signed', False)
-        binding = BINDING_HTTP_POST if sign_requests else BINDING_HTTP_REDIRECT
 
         # ensure our selected binding is supported by the IDP
         supported_bindings = get_idp_sso_supported_bindings(idp, config=conf)
-        if binding not in supported_bindings:
-            binding = BINDING_HTTP_POST if binding == BINDING_HTTP_REDIRECT else BINDING_HTTP_REDIRECT
-            if binding not in supported_bindings:
-                return Response({'detail': _('IdP does not support available bindings.')},
-                                status=status.HTTP_409_CONFLICT)
+        if sign_requests and BINDING_HTTP_POST in supported_bindings:
+            binding = BINDING_HTTP_POST
+        elif BINDING_HTTP_REDIRECT in supported_bindings:
+            binding = BINDING_HTTP_REDIRECT
+        else:
+            return Response({'detail': _('IdP does not support available bindings.')},
+                            status=status.HTTP_409_CONFLICT)
 
         client = Saml2Client(conf)
-
         if binding == BINDING_HTTP_REDIRECT:
             sigalg = SIG_RSA_SHA1 if sign_requests else None
             session_id, result = client.prepare_for_authenticate(
@@ -177,7 +177,7 @@ class Saml2LogoutView(APIView):
             return Response({'detail': _('You are not logged in any IdP/AA')}, status=status.HTTP_401_UNAUTHORIZED)
 
         # Logout is supported only from 1 IdP
-        _, http_info = result.values()[0]
+        binding, http_info = result.values()[0]
         return HttpResponseRedirect(get_location(http_info))
 
 

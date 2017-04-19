@@ -8,54 +8,37 @@ from nodeconductor.core import NodeConductorExtension
 class SAML2Extension(NodeConductorExtension):
 
     class Settings:
-        CONF_DIR = '/etc/nodeconductor/saml2'
-
+        # Read more: https://github.com/rohe/pysaml2-3/blob/master/doc/howto/config.rst
+        # For an example configuration refer to the packaging/etc/nodeconductor/nodeconductor_saml2.py.example
         NODECONDUCTOR_SAML2 = {
             # full path to the xmlsec1 binary program
-            'xmlsec_binary': '/usr/local/bin/xmlsec1',
+            'xmlsec_binary': '/usr/bin/xmlsec1',
             # required for assertion consumer, single logout services and entity ID
-            'base_url': 'http://example.com',
+            'base_url': '',
             # directory with attribute mapping
-            'attribute_map_dir': os.path.join(CONF_DIR, 'attribute-maps'),
+            'attribute_map_dir': os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../', 'attribute-maps'),
             # set to True to output debugging information
             'debug': False,
             # IdPs metadata XML files stored locally
             'idp_metadata_local': [],
             # IdPs metadata XML files stored remotely
-            'idp_metadata_remote': [
-                {
-                    # URL to the metadata XML file
-                    'url': 'http://idp.example.com/saml2/idp/metadata.php',
-                    # path to PEM certificate required to retrieve the remote metadata XML file
-                    'cert': os.path.join(CONF_DIR, 'example-idp.pem'),
-                },
-            ],
+            'idp_metadata_remote': [],
             # logging
             'log_file': '',
             'log_level': 'INFO',
             # PEM formatted certificate chain file
-            'cert_file': os.path.join(CONF_DIR, 'sp1.crt'),
+            'cert_file': '',
             # PEM formatted certificate key file
-            'key_file': os.path.join(CONF_DIR, 'sp1.pem'),
+            'key_file': '',
             # SAML attributes that are required to identify a user
-            'required_attributes': ['cn', 'mail', 'schacPersonalUniqueID'],
+            'required_attributes': [],
             # SAML attributes that may be useful to have but not required
-            'optional_attributes': ['schacHomeOrganization', 'preferredLanguage'],
+            'optional_attributes': [],
             # mapping between SAML attributes and User fields
-            'saml_attribute_mapping': {
-                'schacPersonalUniqueID': ['username', 'civil_number'],
-                'cn': ['full_name'],
-                'mail': ['email'],
-                'preferredLanguage': ['preferred_language'],
-                'schacHomeOrganization': ['organization'],
-            },
+            'saml_attribute_mapping': {},
             # organization responsible for the service
             # you can set multilanguage information here
-            'organization': {
-                'name': [('OpenNode OU', 'et'), ('OpenNode LLC', 'en')],
-                'display_name': [('OpenNode', 'et'), ('OpenNode', 'en')],
-                'url': [('https://opennodecloud.com/', 'et'), ('https://opennodecloud.com/', 'en')],
-            },
+            'organization': {},
         }
 
         # These shouldn't be configurable by user -- see SAML2 section for details

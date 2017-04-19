@@ -1,5 +1,6 @@
 import logging
 
+from django.conf import settings
 from django.contrib import auth
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
@@ -112,6 +113,10 @@ class Saml2LoginCompleteView(RefreshTokenMixin, APIView):
                 {'detail': 'SAML2 authentication failed'},
                 status=status.HTTP_401_UNAUTHORIZED
             )
+        registration_method = settings.NODECONDUCTOR_SAML2.get('name', 'saml2')
+        if user.registration_method != registration_method:
+            user.registration_method = registration_method
+            user.save(update_fields=['registration_method'])
 
         post_authenticated.send_robust(sender=user, session_info=session_info)
         token = self.refresh_token(user)

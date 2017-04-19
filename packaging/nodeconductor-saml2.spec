@@ -16,7 +16,7 @@ Source0: %{name}-%{version}.tar.gz
 # xmlsec1-openssl package is needed for SAML2 features to work
 Requires: nodeconductor >= 0.133.0
 Requires: openssl
-Requires: python-django-saml2 = 0.15.0
+Requires: python-django-saml2 = 0.16.0
 Requires: xmlsec1-openssl
 
 BuildArch: noarch

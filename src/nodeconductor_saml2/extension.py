@@ -11,6 +11,8 @@ class SAML2Extension(NodeConductorExtension):
         # Read more: https://github.com/rohe/pysaml2-3/blob/master/doc/howto/config.rst
         # For an example configuration refer to the packaging/etc/nodeconductor/nodeconductor_saml2.py.example
         NODECONDUCTOR_SAML2 = {
+            # used for assigning the registration method to the user
+            'name': 'saml2',
             # full path to the xmlsec1 binary program
             'xmlsec_binary': '/usr/bin/xmlsec1',
             # required for assertion consumer, single logout services and entity ID

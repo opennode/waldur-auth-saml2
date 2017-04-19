@@ -8,7 +8,7 @@ dev_requires = [
 
 install_requires = [
     'nodeconductor>=0.133.0',
-    'djangosaml2==0.15.0',
+    'djangosaml2==0.16.0',
 ]
 
 

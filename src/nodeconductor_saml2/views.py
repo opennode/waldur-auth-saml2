@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from djangosaml2.cache import OutstandingQueriesCache, IdentityCache, StateCache
 from djangosaml2.conf import get_config
 from djangosaml2.signals import post_authenticated
-from djangosaml2.utils import get_custom_setting, get_location
+from djangosaml2.utils import get_custom_setting, get_location, get_idp_sso_supported_bindings
 from djangosaml2.views import _set_subject_id, _get_subject_id
 from rest_framework import status
 from rest_framework.authtoken.models import Token
@@ -16,10 +16,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from saml2 import BINDING_HTTP_POST, BINDING_HTTP_REDIRECT
 from saml2.client import Saml2Client
+from saml2.xmldsig import SIG_RSA_SHA1
 
 from nodeconductor.core.views import RefreshTokenMixin
 
 from . import serializers
+from .log import event_logger
+
 
 logger = logging.getLogger(__name__)
 
@@ -45,14 +48,30 @@ class Saml2LoginView(APIView):
         idp = serializer.validated_data.get('idp')
 
         conf = get_config(request=request)
+        sign_requests = getattr(conf, '_sp_authn_requests_signed', False)
+        binding = BINDING_HTTP_POST if sign_requests else BINDING_HTTP_REDIRECT
+
+        # ensure our selected binding is supported by the IDP
+        supported_bindings = get_idp_sso_supported_bindings(idp, config=conf)
+        if binding not in supported_bindings:
+            binding = BINDING_HTTP_POST if binding == BINDING_HTTP_REDIRECT else BINDING_HTTP_REDIRECT
+
         client = Saml2Client(conf)
-        session_id, result = client.prepare_for_authenticate(entityid=idp)
+
+        if binding == BINDING_HTTP_REDIRECT:
+            sigalg = SIG_RSA_SHA1 if sign_requests else None
+            session_id, result = client.prepare_for_authenticate(
+                entityid=idp, binding=binding, sign=False, sigalg=sigalg)
+            http_response = HttpResponseRedirect(get_location(result))
+        else:
+            session_id, result = client.prepare_for_authenticate(entityid=idp, binding=binding)
+            http_response = Response({'data': result['data']}, status=status.HTTP_200_OK)
 
         # save session_id
         oq_cache = OutstandingQueriesCache(request.session)
         oq_cache.set(session_id, '')
 
-        return HttpResponseRedirect(get_location(result))
+        return http_response
 
 
 class Saml2LoginCompleteView(RefreshTokenMixin, APIView):
@@ -124,6 +143,10 @@ class Saml2LoginCompleteView(RefreshTokenMixin, APIView):
         _set_subject_id(request.session, session_info['name_id'])
 
         logger.info('Authenticated with SAML token. Returning token for successful login of user %s', user)
+        event_logger.saml2_auth.info(
+            'User {user_username} with full name {user_full_name} logged in successfully with SAML2.',
+            event_type='auth_logged_in_with_saml2', event_context={'user': user}
+        )
         return Response({'token': token.key})
 
 
@@ -189,25 +212,26 @@ class Saml2LogoutCompleteView(APIView):
         client = Saml2Client(conf, state_cache=state,
                              identity_cache=IdentityCache(request.session))
 
-        # Logout started by us
         if 'SAMLResponse' in data:
+            # Logout started by us
             response = client.parse_logout_request_response(data['SAMLResponse'], binding)
-            state.sync()
-            Token.objects.get(user=request.user).delete()
-            auth.logout(request)
-            return Response({'detail': 'User has been logged out.'}, status=status.HTTP_200_OK)
-
-        # Logout started by IdP
-        if 'SAMLRequest' in data:
+            http_response = Response({'detail': 'User has been logged out.'}, status=status.HTTP_200_OK)
+        else:
+            # Logout started by IdP
             subject_id = _get_subject_id(request.session)
             if subject_id is None:
-                Token.objects.get(user=request.user).delete()
-                auth.logout(request)
-                return Response({'detail': 'User has been logged out.'}, status=status.HTTP_200_OK)
+                http_response = Response({'detail': 'User has been logged out.'}, status=status.HTTP_200_OK)
+            else:
+                http_info = client.handle_logout_request(data['SAMLRequest'], subject_id, binding,
+                                                         relay_state=data.get('RelayState', ''))
+                http_response = HttpResponseRedirect(get_location(http_info))
 
-            http_info = client.handle_logout_request(data['SAMLRequest'], subject_id, binding,
-                                                     relay_state=data.get('RelayState', ''))
-            state.sync()
-            Token.objects.get(user=request.user).delete()
-            auth.logout(request)
-            return HttpResponseRedirect(get_location(http_info))
+        state.sync()
+        user = request.user
+        Token.objects.get(user=user).delete()
+        auth.logout(request)
+        event_logger.saml2_auth.info(
+            'User {user_username} with full name {user_full_name} logged out successfully with SAML2.',
+            event_type='auth_logged_out_with_saml2', event_context={'user': user}
+        )
+        return http_response

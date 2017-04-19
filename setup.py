@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import sys
 from setuptools import setup, find_packages
 
 
@@ -8,8 +7,8 @@ dev_requires = [
 ]
 
 install_requires = [
-    'nodeconductor>=0.101.2',
-    'djangosaml2==0.13.0',
+    'nodeconductor>=0.133.0',
+    'djangosaml2==0.16.0',
 ]
 
 

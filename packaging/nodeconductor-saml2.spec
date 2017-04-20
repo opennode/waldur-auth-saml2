@@ -6,17 +6,17 @@
 Name: nodeconductor-saml2
 Summary: SAML2 plugin for NodeConductor
 Group: Development/Libraries
-Version: 0.2.2
+Version: 0.3.0
 Release: 1.el7
-License: Copyright 2015 OpenNode LLC.  All rights reserved.
+License: MIT
 Url: http://nodeconductor.com
 Source0: %{name}-%{version}.tar.gz
 
 # openssl package is needed to generate SAML2 keys during plugin install
 # xmlsec1-openssl package is needed for SAML2 features to work
-Requires: nodeconductor >= 0.78.0
+Requires: nodeconductor >= 0.133.0
 Requires: openssl
-Requires: python-django-saml2 = 0.13.0
+Requires: python-django-saml2 = 0.16.0
 Requires: xmlsec1-openssl
 
 BuildArch: noarch
@@ -63,6 +63,9 @@ if [ "$1" = 1 ]; then
 fi
 
 %changelog
+* Thu Apr 20 2017 Jenkins <jenkins@opennodecloud.com> - 0.3.0-1.el7
+- New upstream release
+
 * Mon Aug 15 2016 Jenkins <jenkins@opennodecloud.com> - 0.2.2-1.el7
 - New upstream release
 

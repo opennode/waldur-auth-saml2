@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import sys
 from setuptools import setup, find_packages
 
 
@@ -8,14 +7,14 @@ dev_requires = [
 ]
 
 install_requires = [
-    'nodeconductor>=0.101.2',
-    'djangosaml2==0.13.0',
+    'nodeconductor>=0.133.0',
+    'djangosaml2==0.16.0',
 ]
 
 
 setup(
     name='nodeconductor-saml2',
-    version='0.2.2',
+    version='0.3.0',
     author='OpenNode Team',
     author_email='info@opennodecloud.com',
     url='http://nodeconductor.com',
@@ -39,6 +38,6 @@ setup(
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',
         'Operating System :: OS Independent',
-        'License :: OSI Approved :: Apache Software License',
+        'License :: OSI Approved :: MIT License',
     ],
 )

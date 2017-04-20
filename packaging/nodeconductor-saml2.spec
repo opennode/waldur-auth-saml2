@@ -1,12 +1,11 @@
 %define __conf_dir %{_sysconfdir}/nodeconductor/saml2
-%define __conf_file %{_sysconfdir}/nodeconductor/nodeconductor_saml2.py.example
-%define __cert_file %{__conf_dir}/dummy.crt
-%define __key_file %{__conf_dir}/dummy.pem
+%define __cert_file %{__conf_dir}/sp.crt
+%define __key_file %{__conf_dir}/sp.pem
 
 Name: nodeconductor-saml2
 Summary: SAML2 plugin for NodeConductor
 Group: Development/Libraries
-Version: 0.3.0
+Version: 0.3.1
 Release: 1.el7
 License: MIT
 Url: http://nodeconductor.com
@@ -42,9 +41,6 @@ echo "%{__conf_dir}" >> INSTALLED_FILES
 
 cp -r attribute-maps %{buildroot}%{__conf_dir}/
 
-cp packaging%{__conf_file} %{buildroot}%{__conf_file}
-echo "%{__conf_file}" >> INSTALLED_FILES
-
 cat INSTALLED_FILES | sort | uniq > INSTALLED_FILES_CLEAN
 
 %clean
@@ -63,6 +59,9 @@ if [ "$1" = 1 ]; then
 fi
 
 %changelog
+* Thu Apr 20 2017 Jenkins <jenkins@opennodecloud.com> - 0.3.1-1.el7
+- New upstream release
+
 * Thu Apr 20 2017 Jenkins <jenkins@opennodecloud.com> - 0.3.0-1.el7
 - New upstream release
 

@@ -1,0 +1,91 @@
+import saml2
+
+# wiki: https://opennode.atlassian.net/wiki/display/WD/Identity+providers
+NODECONDUCTOR_SAML2.update({
+    # used for assigning the registration method to the user
+    'name': 'saml2',
+    # full path to the xmlsec1 binary program
+    'xmlsec_binary': '/usr/bin/xmlsec1',
+    # required for assertion consumer, single logout services and entity ID
+    'base_url': '',
+    # directory with attribute mapping
+    'attribute_map_dir': '/etc/nodeconductor/saml2/attribute-maps',
+    # set to True to output debugging information
+    'debug': False,
+    # IdPs metadata XML files stored locally
+    'idp_metadata_local': [],
+    # IdPs metadata XML files stored remotely
+    'idp_metadata_remote': [],
+    # logging
+    # empty to disable logging SAML2-related stuff to file
+    'log_file': '',
+    'log_level': 'INFO',
+    # Indicates if the entity will sign the logout requests
+    'logout_requests_signed': 'true',
+    # Indicates if the authentication requests sent should be signed by default
+    'authn_requests_signed': 'true',
+    # PEM formatted certificate chain file
+    'cert_file': '/etc/nodeconductor/saml2/sp.crt',
+    # PEM formatted certificate key file
+    'key_file': '/etc/nodeconductor/saml2/sp.pem',
+    # SAML attributes that are required to identify a user
+    'required_attributes': [],
+    # SAML attributes that may be useful to have but not required
+    'optional_attributes': [],
+    # mapping between SAML attributes and User fields
+    'saml_attribute_mapping': {},
+    # organization responsible for the service
+    # you can set multilanguage information here
+    'organization': {
+        'name': [('OpenNode OU', 'et'), ('OpenNode LLC', 'en')],
+        'display_name': [('OpenNode', 'et'), ('OpenNode', 'en')],
+        'url': [('https://opennodecloud.com/', 'et'), ('https://opennodecloud.com/', 'en')],
+    },
+})
+
+SAML_ATTRIBUTE_MAPPING = NODECONDUCTOR_SAML2['saml_attribute_mapping']
+
+SAML2_CONFIG.update({
+    'xmlsec_binary': NODECONDUCTOR_SAML2['xmlsec_binary'],
+    'entityid': NODECONDUCTOR_SAML2['base_url'] + '/api-auth/saml2/metadata/',
+    'attribute_map_dir': NODECONDUCTOR_SAML2['attribute_map_dir'],
+    'service': {
+        'sp': {
+            'logout_requests_signed': NODECONDUCTOR_SAML2['logout_requests_signed'],
+            'authn_requests_signed': NODECONDUCTOR_SAML2['authn_requests_signed'],
+            'endpoints': {
+                'assertion_consumer_service': [
+                    (NODECONDUCTOR_SAML2['base_url'] + '/api-auth/saml2/login/complete/',
+                     saml2.BINDING_HTTP_POST),
+                ],
+                'single_logout_service': [
+                    (NODECONDUCTOR_SAML2['base_url'] + '/api-auth/saml2/logout/complete/',
+                     saml2.BINDING_HTTP_REDIRECT),
+                    (NODECONDUCTOR_SAML2['base_url'] + '/api-auth/saml2/logout/complete/',
+                     saml2.BINDING_HTTP_POST),
+                ],
+            },
+            'required_attributes': NODECONDUCTOR_SAML2['required_attributes'],
+            'optional_attributes': NODECONDUCTOR_SAML2['optional_attributes'],
+        },
+    },
+    'metadata': {
+        'local': NODECONDUCTOR_SAML2['idp_metadata_local'],
+        'remote': NODECONDUCTOR_SAML2['idp_metadata_remote'],
+    },
+    'organization': NODECONDUCTOR_SAML2['organization'],
+    'debug': int(NODECONDUCTOR_SAML2['debug']),
+    'key_file': NODECONDUCTOR_SAML2['key_file'],
+    'cert_file': NODECONDUCTOR_SAML2['cert_file'],
+})
+
+if NODECONDUCTOR_SAML2['log_file'] != '':
+    LOGGING['handlers']['file-saml2'] = {
+        'class': 'logging.handlers.WatchedFileHandler',
+        'filename': NODECONDUCTOR_SAML2['log_file'],
+        'formatter': 'simple',
+        'level': NODECONDUCTOR_SAML2['log_level'].upper(),
+    }
+    LOGGING['loggers']['djangosaml2'] = {
+        'handlers': ['file-saml2']
+    }

@@ -1,6 +1,4 @@
-import os
 import saml2
-import saml2.saml
 
 from nodeconductor.core import NodeConductorExtension
 
@@ -10,6 +8,7 @@ class SAML2Extension(NodeConductorExtension):
     class Settings:
         # Read more: https://github.com/rohe/pysaml2-3/blob/master/doc/howto/config.rst
         # For an example configuration refer to the packaging/etc/nodeconductor/nodeconductor_saml2.py.example
+        # wiki: https://opennode.atlassian.net/wiki/display/WD/Identity+providers
         NODECONDUCTOR_SAML2 = {
             # used for assigning the registration method to the user
             'name': 'saml2',
@@ -18,7 +17,7 @@ class SAML2Extension(NodeConductorExtension):
             # required for assertion consumer, single logout services and entity ID
             'base_url': '',
             # directory with attribute mapping
-            'attribute_map_dir': os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../', 'attribute-maps'),
+            'attribute_map_dir': '',
             # set to True to output debugging information
             'debug': False,
             # IdPs metadata XML files stored locally
@@ -26,8 +25,13 @@ class SAML2Extension(NodeConductorExtension):
             # IdPs metadata XML files stored remotely
             'idp_metadata_remote': [],
             # logging
+            # empty to disable logging SAML2-related stuff to file
             'log_file': '',
             'log_level': 'INFO',
+            # Indicates if the entity will sign the logout requests
+            'logout_requests_signed': 'true',
+            # Indicates if the authentication requests sent should be signed by default
+            'authn_requests_signed': 'true',
             # PEM formatted certificate chain file
             'cert_file': '',
             # PEM formatted certificate key file
@@ -64,9 +68,9 @@ class SAML2Extension(NodeConductorExtension):
                 # we are just a lonely SP
                 'sp': {
                     # Indicates if the entity will sign the logout requests
-                    'logout_requests_signed': 'true',
+                    'logout_requests_signed': NODECONDUCTOR_SAML2['logout_requests_signed'],
                     # Indicates if the authentication requests sent should be signed by default
-                    'authn_requests_signed': 'true',
+                    'authn_requests_signed': NODECONDUCTOR_SAML2['authn_requests_signed'],
 
                     'endpoints': {
                         # url and binding to the assertion consumer service view
@@ -117,6 +121,16 @@ class SAML2Extension(NodeConductorExtension):
     @staticmethod
     def update_settings(settings):
         settings['AUTHENTICATION_BACKENDS'] += ('djangosaml2.backends.Saml2Backend',)
+        if settings['NODECONDUCTOR_SAML2']['log_file'] != '':
+            settings['LOGGING']['handlers']['file-saml2'] = {
+                'class': 'logging.handlers.WatchedFileHandler',
+                'filename': settings['NODECONDUCTOR_SAML2']['log_file'],
+                'formatter': 'simple',
+                'level': settings['NODECONDUCTOR_SAML2']['log_level'].upper(),
+            }
+            settings['LOGGING']['loggers']['djangosaml2'] = {
+                'handlers': ['file-saml2']
+            }
 
     @staticmethod
     def django_app():

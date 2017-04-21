@@ -49,7 +49,7 @@ class SAML2Extension(NodeConductorExtension):
             # Callback URL
             'LOGIN_COMPLETED_URL': 'http://example.com/#/login_completed/{token}/',
             'LOGIN_FAILED_URL': 'http://example.com/#/login_failed/',
-            'LOGOUT_COMPLETED_URL': 'http://example.com/#/login/',
+            'LOGOUT_COMPLETED_URL': 'http://example.com/#/logout_completed/',
             'LOGOUT_FAILED_URL': 'http://example.com/#/logout_failed/',
         }
 

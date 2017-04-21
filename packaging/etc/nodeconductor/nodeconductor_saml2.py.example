@@ -45,7 +45,7 @@ NODECONDUCTOR_SAML2.update({
 
 SAML_ATTRIBUTE_MAPPING = NODECONDUCTOR_SAML2['saml_attribute_mapping']
 
-SAML2_CONFIG.update({
+SAML_CONFIG.update({
     'xmlsec_binary': NODECONDUCTOR_SAML2['xmlsec_binary'],
     'entityid': NODECONDUCTOR_SAML2['base_url'] + '/api-auth/saml2/metadata/',
     'attribute_map_dir': NODECONDUCTOR_SAML2['attribute_map_dir'],

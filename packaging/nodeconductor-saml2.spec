@@ -1,4 +1,5 @@
 %define __conf_dir %{_sysconfdir}/nodeconductor/saml2
+%define __conf_file %{_sysconfdir}/nodeconductor/nodeconductor_saml2.py.example
 %define __cert_file %{__conf_dir}/sp.crt
 %define __key_file %{__conf_dir}/sp.pem
 
@@ -40,6 +41,9 @@ mkdir -p %{buildroot}%{__conf_dir}
 echo "%{__conf_dir}" >> INSTALLED_FILES
 
 cp -r attribute-maps %{buildroot}%{__conf_dir}/
+
+cp packaging%{__conf_file} %{buildroot}%{__conf_file}
+echo "%{__conf_file}" >> INSTALLED_FILES
 
 cat INSTALLED_FILES | sort | uniq > INSTALLED_FILES_CLEAN
 

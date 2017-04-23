@@ -1,5 +1,6 @@
 import logging
 
+import six
 from django.conf import settings
 from django.contrib import auth
 from django.http import HttpResponseRedirect
@@ -10,9 +11,7 @@ from djangosaml2.conf import get_config
 from djangosaml2.signals import post_authenticated
 from djangosaml2.utils import get_custom_setting, get_location, get_idp_sso_supported_bindings
 from djangosaml2.views import _set_subject_id, _get_subject_id
-from rest_framework import status
 from rest_framework.authtoken.models import Token
-from rest_framework.response import Response
 from rest_framework.views import APIView
 from saml2 import BINDING_HTTP_POST, BINDING_HTTP_REDIRECT
 from saml2.client import Saml2Client
@@ -25,6 +24,32 @@ from .log import event_logger
 
 
 logger = logging.getLogger(__name__)
+
+
+def redirect_with(url_template, **kwargs):
+    params = six.moves.urllib.parse.urlencode(kwargs)
+    url = '%s?%s' % (url_template, params)
+    return HttpResponseRedirect(url)
+
+
+def login_completed(token):
+    url_template = settings.NODECONDUCTOR_SAML2['LOGIN_COMPLETED_URL']
+    url = url_template.format(token=token)
+    return HttpResponseRedirect(url)
+
+
+def login_failed(message):
+    url_template = settings.NODECONDUCTOR_SAML2['LOGIN_FAILED_URL']
+    return redirect_with(url_template, message=message)
+
+
+def logout_completed():
+    return HttpResponseRedirect(settings.NODECONDUCTOR_SAML2['LOGOUT_COMPLETED_URL'])
+
+
+def logout_failed(message):
+    url_template = settings.NODECONDUCTOR_SAML2['LOGOUT_FAILED_URL']
+    return redirect_with(url_template, message=message)
 
 
 class Saml2LoginView(APIView):
@@ -41,8 +66,7 @@ class Saml2LoginView(APIView):
 
     def post(self, request):
         if not self.request.user.is_anonymous():
-            return Response({'detail': _('This endpoint is for anonymous users only.')},
-                            status=status.HTTP_403_FORBIDDEN)
+            return login_failed(_('This endpoint is for anonymous users only.'))
 
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -53,29 +77,21 @@ class Saml2LoginView(APIView):
 
         # ensure our selected binding is supported by the IDP
         supported_bindings = get_idp_sso_supported_bindings(idp, config=conf)
-        if sign_requests and BINDING_HTTP_POST in supported_bindings:
-            binding = BINDING_HTTP_POST
-        elif BINDING_HTTP_REDIRECT in supported_bindings:
+        if BINDING_HTTP_REDIRECT in supported_bindings:
             binding = BINDING_HTTP_REDIRECT
         else:
-            return Response({'detail': _('IdP does not support available bindings.')},
-                            status=status.HTTP_409_CONFLICT)
+            return login_failed(_('Identity provider does not support available bindings.'))
 
         client = Saml2Client(conf)
-        if binding == BINDING_HTTP_REDIRECT:
-            sigalg = SIG_RSA_SHA1 if sign_requests else None
-            session_id, result = client.prepare_for_authenticate(
-                entityid=idp, binding=binding, sign=False, sigalg=sigalg)
-            http_response = HttpResponseRedirect(get_location(result))
-        else:
-            session_id, result = client.prepare_for_authenticate(entityid=idp, binding=binding)
-            http_response = Response({'data': result['data']}, status=status.HTTP_200_OK)
+        sigalg = SIG_RSA_SHA1 if sign_requests else None
+        session_id, result = client.prepare_for_authenticate(
+            entityid=idp, binding=binding, sign=False, sigalg=sigalg)
 
         # save session_id
         oq_cache = OutstandingQueriesCache(request.session)
         oq_cache.set(session_id, '')
 
-        return http_response
+        return HttpResponseRedirect(get_location(result))
 
 
 class Saml2LoginCompleteView(RefreshTokenMixin, APIView):
@@ -115,13 +131,7 @@ class Saml2LoginCompleteView(RefreshTokenMixin, APIView):
             response = client.parse_authn_request_response(xmlstr, BINDING_HTTP_POST, outstanding_queries)
         except Exception as e:
             logger.error('SAML response parsing failed %s' % e)
-            response = None
-
-        if response is None:
-            return Response(
-                {'saml2response': _('SAML2 response has errors.')},
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
+            return login_failed(_('SAML2 response has errors.'))
 
         # authenticate the remote user
         session_info = response.session_info()
@@ -132,10 +142,8 @@ class Saml2LoginCompleteView(RefreshTokenMixin, APIView):
             create_unknown_user=create_unknown_user,
         )
         if user is None:
-            return Response(
-                {'detail': _('SAML2 authentication failed.')},
-                status=status.HTTP_401_UNAUTHORIZED
-            )
+            return login_failed(_('SAML2 authentication failed.'))
+
         registration_method = settings.NODECONDUCTOR_SAML2.get('name', 'saml2')
         if user.registration_method != registration_method:
             user.registration_method = registration_method
@@ -151,7 +159,7 @@ class Saml2LoginCompleteView(RefreshTokenMixin, APIView):
             'User {user_username} with full name {user_full_name} logged in successfully with SAML2.',
             event_type='auth_logged_in_with_saml2', event_context={'user': user}
         )
-        return Response({'token': token.key})
+        return login_completed(token.key)
 
 
 class Saml2LogoutView(APIView):
@@ -169,12 +177,12 @@ class Saml2LogoutView(APIView):
         client = Saml2Client(conf, state_cache=state, identity_cache=IdentityCache(request.session))
         subject_id = _get_subject_id(request.session)
         if subject_id is None:
-            return Response({'detail': _('You cannot be logged out')}, status=status.HTTP_401_UNAUTHORIZED)
+            return logout_failed(_('You cannot be logged out.'))
 
         result = client.global_logout(subject_id)
         state.sync()
         if not result:
-            return Response({'detail': _('You are not logged in any IdP/AA')}, status=status.HTTP_401_UNAUTHORIZED)
+            return logout_failed(_('You are not logged in any IdP/AA.'))
 
         # Logout is supported only from 1 IdP
         binding, http_info = result.values()[0]
@@ -219,12 +227,12 @@ class Saml2LogoutCompleteView(APIView):
         if 'SAMLResponse' in data:
             # Logout started by us
             response = client.parse_logout_request_response(data['SAMLResponse'], binding)
-            http_response = Response({'detail': _('User has been logged out.')}, status=status.HTTP_200_OK)
+            http_response = logout_completed()
         else:
             # Logout started by IdP
             subject_id = _get_subject_id(request.session)
             if subject_id is None:
-                http_response = Response({'detail': _('User has been logged out.')}, status=status.HTTP_200_OK)
+                http_response = logout_completed()
             else:
                 http_info = client.handle_logout_request(data['SAMLRequest'], subject_id, binding,
                                                          relay_state=data.get('RelayState', ''))

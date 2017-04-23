@@ -45,6 +45,12 @@ class SAML2Extension(NodeConductorExtension):
             # organization responsible for the service
             # you can set multilanguage information here
             'organization': {},
+
+            # Callback URL
+            'LOGIN_COMPLETED_URL': 'http://example.com/#/login_completed/{token}/',
+            'LOGIN_FAILED_URL': 'http://example.com/#/login_failed/',
+            'LOGOUT_COMPLETED_URL': 'http://example.com/#/logout_completed/',
+            'LOGOUT_FAILED_URL': 'http://example.com/#/logout_failed/',
         }
 
         # These shouldn't be configurable by user -- see SAML2 section for details

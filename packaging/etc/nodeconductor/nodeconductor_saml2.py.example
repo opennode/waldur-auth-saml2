@@ -41,6 +41,11 @@ NODECONDUCTOR_SAML2.update({
         'display_name': [('OpenNode', 'et'), ('OpenNode', 'en')],
         'url': [('https://opennodecloud.com/', 'et'), ('https://opennodecloud.com/', 'en')],
     },
+    # Callback URL
+    'LOGIN_COMPLETED_URL': 'http://example.com/#/login_completed/{token}/',
+    'LOGIN_FAILED_URL': 'http://example.com/#/login_failed/',
+    'LOGOUT_COMPLETED_URL': 'http://example.com/#/logout_completed/',
+    'LOGOUT_FAILED_URL': 'http://example.com/#/logout_failed/',
 })
 
 SAML_ATTRIBUTE_MAPPING = NODECONDUCTOR_SAML2['saml_attribute_mapping']

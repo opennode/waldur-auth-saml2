@@ -64,6 +64,7 @@ class Saml2LoginView(APIView):
     permission_classes = ()
     serializer_class = serializers.Saml2LoginSerializer
 
+    @csrf_exempt
     def post(self, request):
         if not self.request.user.is_anonymous():
             return login_failed(_('This endpoint is for anonymous users only.'))

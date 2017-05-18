@@ -66,6 +66,7 @@ class Saml2LoginView(APIView):
 
     @csrf_exempt
     def post(self, request):
+        # XXX: Django 1.10 deprecation, change to user.is_anonymous
         if not self.request.user.is_anonymous():
             return login_failed(_('This endpoint is for anonymous users only.'))
 

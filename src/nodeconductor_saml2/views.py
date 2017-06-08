@@ -9,10 +9,11 @@ from django.views.decorators.csrf import csrf_exempt
 from djangosaml2.cache import OutstandingQueriesCache, IdentityCache, StateCache
 from djangosaml2.conf import get_config
 from djangosaml2.signals import post_authenticated
-from djangosaml2.utils import get_custom_setting, get_location, get_idp_sso_supported_bindings
+from djangosaml2.utils import get_custom_setting, get_location, get_idp_sso_supported_bindings, available_idps
 from djangosaml2.views import _set_subject_id, _get_subject_id
 from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
+from rest_framework import response
 from saml2 import BINDING_HTTP_POST, BINDING_HTTP_REDIRECT
 from saml2.client import Saml2Client
 from saml2.xmldsig import SIG_RSA_SHA1
@@ -249,3 +250,19 @@ class Saml2LogoutCompleteView(APIView):
             event_type='auth_logged_out_with_saml2', event_context={'user': user}
         )
         return http_response
+
+
+class Saml2ProviderView(APIView):
+    throttle_classes = ()
+    permission_classes = ()
+    serializer_class = serializers.Saml2ProviderSerializer
+
+    def get(self, request):
+        """
+        For IdPs which send GET requests
+        """
+        data = available_idps(get_config())
+        serializer = self.serializer_class(data=data.items(), many=True)
+        serializer.is_valid(raise_exception=True)
+        return response.Response(data=serializer.data)
+

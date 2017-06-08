@@ -24,3 +24,15 @@ class Saml2LogoutCompleteSerializer(serializers.Serializer):
             raise serializers.ValidationError('Either SAMLResponse or SAMLRequest must be provided.')
 
         return attrs
+
+
+class Saml2ProviderSerializer(serializers.Serializer):
+
+    def to_representation(self, instance):
+        return instance
+
+    def to_internal_value(self, data):
+        return {
+            'name': data[1],
+            'url': data[0],
+        }

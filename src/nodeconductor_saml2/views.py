@@ -5,7 +5,9 @@ from django.conf import settings
 from django.contrib import auth
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
+from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.cache import cache_page
 from djangosaml2.cache import OutstandingQueriesCache, IdentityCache, StateCache
 from djangosaml2.conf import get_config
 from djangosaml2.signals import post_authenticated
@@ -257,6 +259,7 @@ class Saml2ProviderView(APIView):
     permission_classes = ()
     serializer_class = serializers.Saml2ProviderSerializer
 
+    @method_decorator(cache_page(60 * 30))
     def get(self, request):
         """
         For IdPs which send GET requests

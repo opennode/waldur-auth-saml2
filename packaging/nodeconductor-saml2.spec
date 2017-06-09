@@ -4,12 +4,12 @@
 %define __key_file %{__conf_dir}/sp.pem
 
 Name: nodeconductor-saml2
-Summary: SAML2 plugin for NodeConductor
+Summary: SAML2 plugin for Waldur
 Group: Development/Libraries
-Version: 0.3.3
+Version: 0.4.0
 Release: 1.el7
 License: MIT
-Url: http://nodeconductor.com
+Url: http://waldur.com
 Source0: %{name}-%{version}.tar.gz
 
 # openssl package is needed to generate SAML2 keys during plugin install
@@ -25,7 +25,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 BuildRequires: python-setuptools
 
 %description
-SAML2 plugin for NodeConductor.
+SAML2 plugin for Waldur.
 
 %prep
 %setup -q -n %{name}-%{version}
@@ -63,6 +63,9 @@ if [ "$1" = 1 ]; then
 fi
 
 %changelog
+* Fri Jun 9 2017 Jenkins <jenkins@opennodecloud.com> - 0.4.0-1.el7
+- New upstream release
+
 * Thu Apr 27 2017 Jenkins <jenkins@opennodecloud.com> - 0.3.3-1.el7
 - New upstream release
 

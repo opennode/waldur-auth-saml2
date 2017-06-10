@@ -21,7 +21,7 @@ class SAML2Extension(NodeConductorExtension):
             # set to True to output debugging information
             'debug': False,
             # IdPs metadata XML files stored locally
-            'idp_metadata_local': ['/home/victor/nc/test/InCommon-metadata-idp-only.xml'],
+            'idp_metadata_local': [],
             # IdPs metadata XML files stored remotely
             'idp_metadata_remote': [],
             # logging

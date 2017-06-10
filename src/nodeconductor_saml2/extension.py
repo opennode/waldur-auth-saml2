@@ -146,3 +146,14 @@ class SAML2Extension(NodeConductorExtension):
     def django_urls():
         from .urls import urlpatterns
         return urlpatterns
+
+    @staticmethod
+    def celery_tasks():
+        from datetime import timedelta
+        return {
+            'nodeconductor-saml2-sync-providers': {
+                'task': 'nodeconductor_saml2.sync_providers',
+                'schedule': timedelta(minutes=60),
+                'args': (),
+            },
+        }

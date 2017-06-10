@@ -21,7 +21,7 @@ class SAML2Extension(NodeConductorExtension):
             # set to True to output debugging information
             'debug': False,
             # IdPs metadata XML files stored locally
-            'idp_metadata_local': [],
+            'idp_metadata_local': ['/home/victor/nc/test/InCommon-metadata-idp-only.xml'],
             # IdPs metadata XML files stored remotely
             'idp_metadata_remote': [],
             # logging
@@ -146,3 +146,14 @@ class SAML2Extension(NodeConductorExtension):
     def django_urls():
         from .urls import urlpatterns
         return urlpatterns
+
+    @staticmethod
+    def celery_tasks():
+        from datetime import timedelta
+        return {
+            'nodeconductor-saml2-sync-providers': {
+                'task': 'nodeconductor_saml2.sync_providers',
+                'schedule': timedelta(minutes=60),
+                'args': (),
+            },
+        }

@@ -3,6 +3,7 @@ from djangosaml2.utils import available_idps
 from rest_framework import serializers
 
 from nodeconductor.core.serializers import Base64Field
+from . import models
 
 
 class Saml2LoginSerializer(serializers.Serializer):
@@ -26,13 +27,7 @@ class Saml2LogoutCompleteSerializer(serializers.Serializer):
         return attrs
 
 
-class Saml2ProviderSerializer(serializers.Serializer):
-
-    def to_representation(self, instance):
-        return instance
-
-    def to_internal_value(self, data):
-        return {
-            'name': data[1],
-            'url': data[0],
-        }
+class Saml2ProviderSerializer(serializers.ModelSerializer):
+    class Meta(object):
+        model = models.IdentityProvider
+        fields = ('name', 'url')

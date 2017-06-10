@@ -5,24 +5,22 @@ from django.conf import settings
 from django.contrib import auth
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
-from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.cache import cache_page
 from djangosaml2.cache import OutstandingQueriesCache, IdentityCache, StateCache
 from djangosaml2.conf import get_config
 from djangosaml2.signals import post_authenticated
-from djangosaml2.utils import get_custom_setting, get_location, get_idp_sso_supported_bindings, available_idps
+from djangosaml2.utils import get_custom_setting, get_location, get_idp_sso_supported_bindings
 from djangosaml2.views import _set_subject_id, _get_subject_id
 from rest_framework.authtoken.models import Token
+from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
-from rest_framework import response
 from saml2 import BINDING_HTTP_POST, BINDING_HTTP_REDIRECT
 from saml2.client import Saml2Client
 from saml2.xmldsig import SIG_RSA_SHA1
 
 from nodeconductor.core.views import RefreshTokenMixin
 
-from . import serializers
+from . import filters, models, serializers
 from .log import event_logger
 
 
@@ -254,18 +252,9 @@ class Saml2LogoutCompleteView(APIView):
         return http_response
 
 
-class Saml2ProviderView(APIView):
+class Saml2ProviderView(ListAPIView):
     throttle_classes = ()
     permission_classes = ()
     serializer_class = serializers.Saml2ProviderSerializer
-
-    @method_decorator(cache_page(60 * 30))
-    def get(self, request):
-        """
-        For IdPs which send GET requests
-        """
-        data = available_idps(get_config())
-        serializer = self.serializer_class(data=data.items(), many=True)
-        serializer.is_valid(raise_exception=True)
-        return response.Response(data=serializer.data)
-
+    queryset = models.IdentityProvider.objects.all()
+    filter_class = filters.IdentityProviderFilter

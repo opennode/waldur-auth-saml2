@@ -136,8 +136,24 @@ class Saml2LoginCompleteView(RefreshTokenMixin, APIView):
             logger.error('SAML response parsing failed %s' % e)
             return login_failed(_('SAML2 response has errors.'))
 
+        if response is None:
+            logger.error('SAML response is None')
+            return login_failed(_('SAML response has errors. Please check the logs'))
+
+        if response.assertion is None:
+            logger.error('SAML response assertion is None')
+            return login_failed(_('SAML response has errors. Please check the logs'))
+
+        session_id = response.session_id()
+        oq_cache.delete(session_id)
+
         # authenticate the remote user
         session_info = response.session_info()
+
+        if callable(attribute_mapping):
+            attribute_mapping = attribute_mapping()
+        if callable(create_unknown_user):
+            create_unknown_user = create_unknown_user()
 
         user = auth.authenticate(
             session_info=session_info,

@@ -1,5 +1,5 @@
 from celery import shared_task
-import subprocess
+import subprocess  # nosec
 
 
 @shared_task(name='nodeconductor_saml2.sync_providers')

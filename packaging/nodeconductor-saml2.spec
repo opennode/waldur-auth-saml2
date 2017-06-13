@@ -6,7 +6,7 @@
 Name: nodeconductor-saml2
 Summary: SAML2 plugin for Waldur
 Group: Development/Libraries
-Version: 0.5.1
+Version: 0.5.2
 Release: 1.el7
 License: MIT
 Url: http://waldur.com
@@ -63,6 +63,9 @@ if [ "$1" = 1 ]; then
 fi
 
 %changelog
+* Tue Jun 13 2017 Jenkins <jenkins@opennodecloud.com> - 0.5.2-1.el7
+- New upstream release
+
 * Mon Jun 12 2017 Jenkins <jenkins@opennodecloud.com> - 0.5.1-1.el7
 - New upstream release
 

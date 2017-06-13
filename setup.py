@@ -14,7 +14,7 @@ install_requires = [
 
 setup(
     name='nodeconductor-saml2',
-    version='0.5.2',
+    version='0.5.3',
     author='OpenNode Team',
     author_email='info@opennodecloud.com',
     url='http://waldur.com',

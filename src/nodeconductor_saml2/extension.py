@@ -107,7 +107,7 @@ class SAML2Extension(NodeConductorExtension):
             # See also: https://github.com/rohe/pysaml2/issues/216
             'metadata': [
                 {
-                    'class': 'nodeconductor_saml2.mdstore.DatabaseMetadata',
+                    'class': 'nodeconductor_saml2.utils.DatabaseMetadataLoader',
                     'metadata': [],  # empty but mandatory parameter
                 },
             ],

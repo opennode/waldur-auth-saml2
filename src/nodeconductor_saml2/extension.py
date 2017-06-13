@@ -103,11 +103,14 @@ class SAML2Extension(NodeConductorExtension):
                 },
             },
 
-            # where the remote metadata is stored
-            'metadata': {
-                'local': NODECONDUCTOR_SAML2['idp_metadata_local'],
-                'remote': NODECONDUCTOR_SAML2['idp_metadata_remote'],
-            },
+            # Use database metadata loader
+            # See also: https://github.com/rohe/pysaml2/issues/216
+            'metadata': [
+                {
+                    'class': 'nodeconductor_saml2.utils.DatabaseMetadataLoader',
+                    'metadata': [],  # empty but mandatory parameter
+                },
+            ],
 
             'organization': NODECONDUCTOR_SAML2['organization'],
 
@@ -128,15 +131,40 @@ class SAML2Extension(NodeConductorExtension):
     def update_settings(settings):
         settings['AUTHENTICATION_BACKENDS'] += ('djangosaml2.backends.Saml2Backend',)
         if settings['NODECONDUCTOR_SAML2']['log_file'] != '':
+            level = settings['NODECONDUCTOR_SAML2']['log_level'].upper()
             settings['LOGGING']['handlers']['file-saml2'] = {
                 'class': 'logging.handlers.WatchedFileHandler',
                 'filename': settings['NODECONDUCTOR_SAML2']['log_file'],
                 'formatter': 'simple',
-                'level': settings['NODECONDUCTOR_SAML2']['log_level'].upper(),
+                'level': level,
             }
+
             settings['LOGGING']['loggers']['djangosaml2'] = {
-                'handlers': ['file-saml2']
+                'handlers': ['file-saml2'],
+                'propagate': True,
+                'level': level,
             }
+
+            settings['LOGGING']['loggers']['saml2'] = {
+                'handlers': ['file-saml2'],
+                'propagate': True,
+                'level': level,
+            }
+
+        # Use the same keypairs for both signing and encryption.
+        # Otherwise pysaml2 doesn't decrypt encrypted assertion.
+        # See also: https://github.com/knaperek/djangosaml2/issues/22
+        settings['SAML_CONFIG']['encryption_keypairs'] = [{
+            'key_file': settings['NODECONDUCTOR_SAML2']['key_file'],
+            'cert_file': settings['NODECONDUCTOR_SAML2']['cert_file'],
+        }]
+
+        # Implement backward-compatible style for remote metadata specification.
+        for remote in settings['NODECONDUCTOR_SAML2']['idp_metadata_remote']:
+            settings['SAML_CONFIG']['metadata'].append({
+                'class': 'saml2.mdstore.MetaDataExtern',
+                'metadata': [(remote['url'], remote['cert'])]
+            })
 
     @staticmethod
     def django_app():

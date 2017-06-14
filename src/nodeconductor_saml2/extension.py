@@ -108,7 +108,7 @@ class SAML2Extension(NodeConductorExtension):
             'metadata': [
                 {
                     'class': 'nodeconductor_saml2.utils.DatabaseMetadataLoader',
-                    'metadata': [],  # empty but mandatory parameter
+                    'metadata': [('nodeconductor_saml2.utils.DatabaseMetadataLoader',)],
                 },
             ],
 

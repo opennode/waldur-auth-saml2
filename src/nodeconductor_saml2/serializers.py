@@ -1,15 +1,17 @@
-from djangosaml2.conf import get_config
-from djangosaml2.utils import available_idps
 from rest_framework import serializers
 
 from nodeconductor.core.serializers import Base64Field
-from . import models
+from . import models, utils
 
 
 class Saml2LoginSerializer(serializers.Serializer):
-    idp = serializers.ChoiceField(
-        choices=available_idps(get_config()).items(),
-    )
+    idp = serializers.URLField()
+
+    def clean_idp(self, value):
+        if utils.is_valid_idp(value):
+            return value
+        else:
+            raise serializers.ValidationError('Identity provider %s is not available.' % value)
 
 
 class Saml2LoginCompleteSerializer(serializers.Serializer):

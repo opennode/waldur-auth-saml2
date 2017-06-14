@@ -9,7 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from djangosaml2.cache import OutstandingQueriesCache, IdentityCache, StateCache
 from djangosaml2.conf import get_config
 from djangosaml2.signals import post_authenticated
-from djangosaml2.utils import get_custom_setting, get_location, get_idp_sso_supported_bindings
+from djangosaml2.utils import get_custom_setting, get_location
 from djangosaml2.views import _set_subject_id, _get_subject_id
 from rest_framework.authtoken.models import Token
 from rest_framework.generics import ListAPIView
@@ -20,7 +20,7 @@ from saml2.xmldsig import SIG_RSA_SHA1
 
 from nodeconductor.core.views import RefreshTokenMixin
 
-from . import filters, models, serializers
+from . import filters, models, serializers, utils
 from .log import event_logger
 
 
@@ -78,7 +78,7 @@ class Saml2LoginView(APIView):
         sign_requests = getattr(conf, '_sp_authn_requests_signed', False)
 
         # ensure our selected binding is supported by the IDP
-        supported_bindings = get_idp_sso_supported_bindings(idp, config=conf)
+        supported_bindings = utils.get_idp_sso_supported_bindings(idp, config=conf)
         if BINDING_HTTP_REDIRECT in supported_bindings:
             binding = BINDING_HTTP_REDIRECT
         else:

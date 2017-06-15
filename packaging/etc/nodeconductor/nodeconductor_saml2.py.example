@@ -74,10 +74,12 @@ SAML_CONFIG.update({
             'optional_attributes': NODECONDUCTOR_SAML2['optional_attributes'],
         },
     },
-    'metadata': {
-        'local': NODECONDUCTOR_SAML2['idp_metadata_local'],
-        'remote': NODECONDUCTOR_SAML2['idp_metadata_remote'],
-    },
+    'metadata': [
+        {
+            'class': 'nodeconductor_saml2.utils.DatabaseMetadataLoader',
+            'metadata': [('nodeconductor_saml2.utils.DatabaseMetadataLoader',)],
+        },
+    ],
     'organization': NODECONDUCTOR_SAML2['organization'],
     'debug': int(NODECONDUCTOR_SAML2['debug']),
     'key_file': NODECONDUCTOR_SAML2['key_file'],
@@ -85,12 +87,33 @@ SAML_CONFIG.update({
 })
 
 if NODECONDUCTOR_SAML2['log_file'] != '':
+    level = NODECONDUCTOR_SAML2['log_level'].upper()
     LOGGING['handlers']['file-saml2'] = {
         'class': 'logging.handlers.WatchedFileHandler',
         'filename': NODECONDUCTOR_SAML2['log_file'],
         'formatter': 'simple',
-        'level': NODECONDUCTOR_SAML2['log_level'].upper(),
+        'level': level,
     }
+
     LOGGING['loggers']['djangosaml2'] = {
-        'handlers': ['file-saml2']
+        'handlers': ['file-saml2'],
+        'propagate': True,
+        'level': level,
     }
+
+    LOGGING['loggers']['saml2'] = {
+        'handlers': ['file-saml2'],
+        'propagate': True,
+        'level': level,
+    }
+
+SAML_CONFIG['encryption_keypairs'] = [{
+    'key_file': NODECONDUCTOR_SAML2['key_file'],
+    'cert_file': NODECONDUCTOR_SAML2['cert_file'],
+}]
+
+for remote in NODECONDUCTOR_SAML2['idp_metadata_remote']:
+    SAML_CONFIG['metadata'].append({
+        'class': 'saml2.mdstore.MetaDataExtern',
+        'metadata': [(remote['url'], remote['cert'])]
+    })

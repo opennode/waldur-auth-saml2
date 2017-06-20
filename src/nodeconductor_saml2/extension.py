@@ -77,7 +77,7 @@ class SAML2Extension(NodeConductorExtension):
             # your entity id, usually your subdomain plus the url to the metadata view
             'entityid': NODECONDUCTOR_SAML2['base_url'] + '/api-auth/saml2/metadata/',
 
-            'entity_category': NODECONDUCTOR_SAML2['entity_categories'],
+            'entity_category': NODECONDUCTOR_SAML2['categories'],
 
             # directory with attribute mapping
             'attribute_map_dir': NODECONDUCTOR_SAML2['attribute_map_dir'],

@@ -1,5 +1,7 @@
 import saml2
 
+from saml2.entity_category.edugain import COC
+
 from nodeconductor.core import NodeConductorExtension
 
 
@@ -46,6 +48,15 @@ class SAML2Extension(NodeConductorExtension):
             # you can set multilanguage information here
             'organization': {},
 
+            # links to the entity categories
+            'categories': [COC],
+
+            # attributes required to meet CoC requirements
+            # https://wiki.refeds.org/display/CODE/SAML+2+Profile+for+the+Data+Protection+Code+of+Conduct
+            'privacy_statement_url': 'http://example.com/#/privacy-policy/',
+            'display_name': 'Service provider display name',
+            'description': 'Service provider description',
+
             # Callback URL
             'LOGIN_COMPLETED_URL': 'http://example.com/#/login_complete/{token}/',
             'LOGIN_FAILED_URL': 'http://example.com/#/login_failed/',
@@ -65,6 +76,8 @@ class SAML2Extension(NodeConductorExtension):
 
             # your entity id, usually your subdomain plus the url to the metadata view
             'entityid': NODECONDUCTOR_SAML2['base_url'] + '/api-auth/saml2/metadata/',
+
+            'entity_category': NODECONDUCTOR_SAML2['entity_categories'],
 
             # directory with attribute mapping
             'attribute_map_dir': NODECONDUCTOR_SAML2['attribute_map_dir'],
@@ -93,6 +106,23 @@ class SAML2Extension(NodeConductorExtension):
                             (NODECONDUCTOR_SAML2['base_url'] + '/api-auth/saml2/logout/complete/',
                              saml2.BINDING_HTTP_POST),
                         ],
+                    },
+
+                    'extensions': {
+                        'mdui': {
+                            'PrivacyStatementURL': {
+                                'lang': 'en',
+                                'text': NODECONDUCTOR_SAML2['privacy_statement_url'],
+                            },
+                            'DisplayName': {
+                                'lang': 'en',
+                                'text': NODECONDUCTOR_SAML2['description'],
+                            },
+                            'Description': {
+                                'lang': 'en',
+                                'text': NODECONDUCTOR_SAML2['description'],
+                            },
+                        },
                     },
 
                     # attributes that this project needs to identify a user

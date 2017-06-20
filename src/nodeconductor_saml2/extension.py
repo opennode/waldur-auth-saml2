@@ -51,7 +51,7 @@ class SAML2Extension(NodeConductorExtension):
             # links to the entity categories
             'categories': [COC],
 
-            # attributes required to meet CoC requirements
+            # attributes required by CoC
             # https://wiki.refeds.org/display/CODE/SAML+2+Profile+for+the+Data+Protection+Code+of+Conduct
             'privacy_statement_url': 'http://example.com/#/privacy-policy/',
             'display_name': 'Service provider display name',

@@ -1,3 +1,4 @@
+import datetime
 import saml2
 
 # wiki: https://opennode.atlassian.net/wiki/display/WD/Identity+providers
@@ -48,6 +49,11 @@ NODECONDUCTOR_SAML2.update({
     'display_name': 'Service provider display name',
     'description': 'Service provider description',
 
+    # mdpi attributes
+    'registration_policy': 'http://example.com/#/registration-policy/',
+    'registration_authority': 'http://example.com/#/registration-authority/',
+    'registration_instant': datetime.datetime(2017, 1, 1).isoformat(),
+
     # Callback URL
     'LOGIN_COMPLETED_URL': 'http://example.com/#/login_complete/{token}/',
     'LOGIN_FAILED_URL': 'http://example.com/#/login_failed/',
@@ -91,6 +97,34 @@ SAML_CONFIG.update({
     'debug': int(NODECONDUCTOR_SAML2['debug']),
     'key_file': NODECONDUCTOR_SAML2['key_file'],
     'cert_file': NODECONDUCTOR_SAML2['cert_file'],
+    'extensions': {
+        'mdui': {
+            'UIInfo': {
+                'display_name': {
+                    'lang': 'en',
+                    'text': NODECONDUCTOR_SAML2['display_name'],
+                },
+                'description': {
+                    'lang': 'en',
+                    'text': NODECONDUCTOR_SAML2['description'],
+                },
+                'privacy_statement_url': {
+                    'lang': 'en',
+                    'text': NODECONDUCTOR_SAML2['privacy_statement_url'],
+                },
+            },
+        },
+        'mdrpi': {
+            'RegistrationInfo': {
+                'registration_policy': {
+                    'lang': 'en',
+                    'text': NODECONDUCTOR_SAML2['registration_policy'],
+                },
+                'registrationAuthority': NODECONDUCTOR_SAML2['registration_authority'],
+                'registrationInstant': NODECONDUCTOR_SAML2['registration_instant'],
+            },
+        },
+    },
 })
 
 if NODECONDUCTOR_SAML2['log_file'] != '':

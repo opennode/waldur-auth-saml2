@@ -1,3 +1,4 @@
+import datetime
 import saml2
 
 from saml2.entity_category.edugain import COC
@@ -57,6 +58,11 @@ class SAML2Extension(NodeConductorExtension):
             'display_name': 'Service provider display name',
             'description': 'Service provider description',
 
+            # mdpi attributes
+            'registration_policy': 'http://example.com/#/registration-policy/',
+            'registration_authority': 'http://example.com/#/registration-authority/',
+            'registration_instant': datetime.datetime(2017, 1, 1).isoformat(),
+
             # Callback URL
             'LOGIN_COMPLETED_URL': 'http://example.com/#/login_complete/{token}/',
             'LOGIN_FAILED_URL': 'http://example.com/#/login_failed/',
@@ -110,19 +116,31 @@ class SAML2Extension(NodeConductorExtension):
 
                     'extensions': {
                         'mdui': {
-                            'PrivacyStatementURL': {
-                                'lang': 'en',
-                                'text': NODECONDUCTOR_SAML2['privacy_statement_url'],
-                            },
-                            'DisplayName': {
-                                'lang': 'en',
-                                'text': NODECONDUCTOR_SAML2['description'],
-                            },
-                            'Description': {
-                                'lang': 'en',
-                                'text': NODECONDUCTOR_SAML2['description'],
+                            'UIInfo': {
+                                'display_name': {
+                                    'lang': 'en',
+                                    'text': NODECONDUCTOR_SAML2['display_name'],
+                                },
+                                'description': {
+                                    'lang': 'en',
+                                    'text': NODECONDUCTOR_SAML2['description'],
+                                },
+                                'privacy_statement_url': {
+                                    'lang': 'en',
+                                    'text': NODECONDUCTOR_SAML2['privacy_statement_url'],
+                                },
                             },
                         },
+                        'mdrpi': {
+                            'RegistrationInfo': {
+                                'registration_policy': {
+                                    'lang': 'en',
+                                    'text': NODECONDUCTOR_SAML2['registration_policy'],
+                                },
+                                'registrationAuthority': NODECONDUCTOR_SAML2['registration_authority'],
+                                'registrationInstant': NODECONDUCTOR_SAML2['registration_instant'],
+                            },
+                        }
                     },
 
                     # attributes that this project needs to identify a user

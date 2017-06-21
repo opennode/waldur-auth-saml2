@@ -1,7 +1,7 @@
-def update_registration_method(sender, instance, attributes, user_modified, **kwargs):
+def update_registration_method(sender, instance, **kwargs):
     user = instance
     if user.registration_method != 'SAML2':
         user.registration_method = 'SAML2'
         return True
     else:
-        return user_modified
+        return False

@@ -116,7 +116,7 @@ class SAML2Extension(NodeConductorExtension):
                             },
                             'DisplayName': {
                                 'lang': 'en',
-                                'text': NODECONDUCTOR_SAML2['description'],
+                                'text': NODECONDUCTOR_SAML2['display_name'],
                             },
                             'Description': {
                                 'lang': 'en',

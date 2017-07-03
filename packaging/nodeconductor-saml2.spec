@@ -1,5 +1,5 @@
-%define __conf_dir %{_sysconfdir}/nodeconductor/saml2
-%define __conf_file %{_sysconfdir}/nodeconductor/nodeconductor_saml2.py.example
+%define __conf_dir %{_sysconfdir}/waldur/saml2
+%define __conf_file %{_sysconfdir}/waldur/saml2.conf.py.example
 %define __cert_file %{__conf_dir}/sp.crt
 %define __key_file %{__conf_dir}/sp.pem
 

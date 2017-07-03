@@ -10,7 +10,7 @@ class SAML2Extension(NodeConductorExtension):
 
     class Settings:
         # Read more: https://github.com/rohe/pysaml2-3/blob/master/doc/howto/config.rst
-        # For an example configuration refer to the packaging/etc/nodeconductor/nodeconductor_saml2.py.example
+        # For an example configuration refer to the packaging/etc/waldur/saml2.conf.py.example
         # wiki: https://opennode.atlassian.net/wiki/display/WD/Identity+providers
         NODECONDUCTOR_SAML2 = {
             # used for assigning the registration method to the user

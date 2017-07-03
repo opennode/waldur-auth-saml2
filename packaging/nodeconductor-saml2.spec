@@ -1,12 +1,12 @@
-%define __conf_dir %{_sysconfdir}/nodeconductor/saml2
-%define __conf_file %{_sysconfdir}/nodeconductor/nodeconductor_saml2.py.example
+%define __conf_dir %{_sysconfdir}/waldur/saml2
+%define __conf_file %{_sysconfdir}/waldur/saml2.conf.py.example
 %define __cert_file %{__conf_dir}/sp.crt
 %define __key_file %{__conf_dir}/sp.pem
 
 Name: nodeconductor-saml2
 Summary: SAML2 plugin for Waldur
 Group: Development/Libraries
-Version: 0.7.1
+Version: 0.7.2
 Release: 1.el7
 License: MIT
 Url: http://waldur.com
@@ -63,6 +63,9 @@ if [ "$1" = 1 ]; then
 fi
 
 %changelog
+* Mon Jul 3 2017 Jenkins <jenkins@opennodecloud.com> - 0.7.2-1.el7
+- New upstream release
+
 * Fri Jun 30 2017 Jenkins <jenkins@opennodecloud.com> - 0.7.1-1.el7
 - New upstream release
 

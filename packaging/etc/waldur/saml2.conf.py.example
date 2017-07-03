@@ -10,7 +10,7 @@ NODECONDUCTOR_SAML2.update({
     # required for assertion consumer, single logout services and entity ID
     'base_url': '',
     # directory with attribute mapping
-    'attribute_map_dir': '/etc/nodeconductor/saml2/attribute-maps',
+    'attribute_map_dir': '/etc/waldur/saml2/attribute-maps',
     # set to True to output debugging information
     'debug': False,
     # IdPs metadata XML files stored locally
@@ -26,9 +26,9 @@ NODECONDUCTOR_SAML2.update({
     # Indicates if the authentication requests sent should be signed by default
     'authn_requests_signed': 'true',
     # PEM formatted certificate chain file
-    'cert_file': '/etc/nodeconductor/saml2/sp.crt',
+    'cert_file': '/etc/waldur/saml2/sp.crt',
     # PEM formatted certificate key file
-    'key_file': '/etc/nodeconductor/saml2/sp.pem',
+    'key_file': '/etc/waldur/saml2/sp.pem',
     # SAML attributes that are required to identify a user
     'required_attributes': [],
     # SAML attributes that may be useful to have but not required

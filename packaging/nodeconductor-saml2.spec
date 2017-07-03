@@ -3,7 +3,7 @@
 %define __cert_file %{__conf_dir}/sp.crt
 %define __key_file %{__conf_dir}/sp.pem
 
-Name: nodeconductor-saml2
+Name: waldur-auth-saml2
 Summary: SAML2 plugin for Waldur
 Group: Development/Libraries
 Version: 0.7.2
@@ -23,6 +23,8 @@ BuildArch: noarch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 BuildRequires: python-setuptools
+
+Obsoletes: nodeconductor-saml2
 
 %description
 SAML2 plugin for Waldur.

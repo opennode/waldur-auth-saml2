@@ -3,10 +3,10 @@
 %define __cert_file %{__conf_dir}/sp.crt
 %define __key_file %{__conf_dir}/sp.pem
 
-Name: nodeconductor-saml2
+Name: waldur-auth-saml2
 Summary: SAML2 plugin for Waldur
 Group: Development/Libraries
-Version: 0.7.2
+Version: 0.7.3
 Release: 1.el7
 License: MIT
 Url: http://waldur.com
@@ -23,6 +23,8 @@ BuildArch: noarch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 BuildRequires: python-setuptools
+
+Obsoletes: nodeconductor-saml2
 
 %description
 SAML2 plugin for Waldur.
@@ -63,6 +65,9 @@ if [ "$1" = 1 ]; then
 fi
 
 %changelog
+* Mon Jul 3 2017 Jenkins <jenkins@opennodecloud.com> - 0.7.3-1.el7
+- New upstream release
+
 * Mon Jul 3 2017 Jenkins <jenkins@opennodecloud.com> - 0.7.2-1.el7
 - New upstream release
 

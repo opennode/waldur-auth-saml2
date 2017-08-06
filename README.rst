@@ -1,5 +1,5 @@
-NodeConductor SAML2
-===============================
+Waldur SAML2
+============
 
-NodeConductor plugin bringing SAML2-based authentication support.
+Waldur plugin bringing SAML2-based authentication support.
 

@@ -14,9 +14,9 @@ Source0: %{name}-%{version}.tar.gz
 
 # openssl package is needed to generate SAML2 keys during plugin install
 # xmlsec1-openssl package is needed for SAML2 features to work
-Requires: waldur-core >= 0.133.0
+Requires: waldur-core >= 0.146.4
 Requires: openssl
-Requires: python-django-saml2 = 0.16.0
+Requires: python-django-saml2 = 0.16.9
 Requires: xmlsec1-openssl
 
 BuildArch: noarch

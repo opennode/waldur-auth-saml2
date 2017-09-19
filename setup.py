@@ -7,14 +7,14 @@ dev_requires = [
 ]
 
 install_requires = [
-    'nodeconductor>=0.133.0',
-    'djangosaml2==0.16.0',
+    'nodeconductor>=0.146.4',
+    'djangosaml2==0.16.9',
 ]
 
 
 setup(
     name='nodeconductor-saml2',
-    version='0.7.3',
+    version='0.8.0',
     author='OpenNode Team',
     author_email='info@opennodecloud.com',
     url='http://waldur.com',

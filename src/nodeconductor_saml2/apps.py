@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 
 class SAML2Config(AppConfig):
     name = 'nodeconductor_saml2'
-    verbose_name = 'SAML2'
+    verbose_name = 'Auth SAML2'
 
     def ready(self):
         from djangosaml2.signals import pre_user_save

@@ -11,7 +11,7 @@ from . import models
 
 def load_providers():
     metadata = {}
-    for filename in settings.NODECONDUCTOR_SAML2['idp_metadata_local']:
+    for filename in settings.WALDUR_AUTH_SAML2['idp_metadata_local']:
         mdf = MetaDataFile(ac_factory(), filename)
         mdf.load()
         metadata.update(mdf.items())

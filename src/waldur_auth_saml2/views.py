@@ -34,22 +34,22 @@ def redirect_with(url_template, **kwargs):
 
 
 def login_completed(token):
-    url_template = settings.NODECONDUCTOR_SAML2['LOGIN_COMPLETED_URL']
+    url_template = settings.WALDUR_AUTH_SAML2['LOGIN_COMPLETED_URL']
     url = url_template.format(token=token)
     return HttpResponseRedirect(url)
 
 
 def login_failed(message):
-    url_template = settings.NODECONDUCTOR_SAML2['LOGIN_FAILED_URL']
+    url_template = settings.WALDUR_AUTH_SAML2['LOGIN_FAILED_URL']
     return redirect_with(url_template, message=message)
 
 
 def logout_completed():
-    return HttpResponseRedirect(settings.NODECONDUCTOR_SAML2['LOGOUT_COMPLETED_URL'])
+    return HttpResponseRedirect(settings.WALDUR_AUTH_SAML2['LOGOUT_COMPLETED_URL'])
 
 
 def logout_failed(message):
-    url_template = settings.NODECONDUCTOR_SAML2['LOGOUT_FAILED_URL']
+    url_template = settings.WALDUR_AUTH_SAML2['LOGOUT_FAILED_URL']
     return redirect_with(url_template, message=message)
 
 
@@ -162,7 +162,7 @@ class Saml2LoginCompleteView(RefreshTokenMixin, APIView):
         if user is None:
             return login_failed(_('SAML2 authentication failed.'))
 
-        registration_method = settings.NODECONDUCTOR_SAML2.get('name', 'saml2')
+        registration_method = settings.WALDUR_AUTH_SAML2.get('name', 'saml2')
         if user.registration_method != registration_method:
             user.registration_method = registration_method
             user.save(update_fields=['registration_method'])

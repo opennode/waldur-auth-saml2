@@ -12,7 +12,7 @@ class SAML2Extension(NodeConductorExtension):
         # Read more: https://github.com/rohe/pysaml2-3/blob/master/doc/howto/config.rst
         # For an example configuration refer to the packaging/etc/waldur/saml2.conf.py.example
         # wiki: https://opennode.atlassian.net/wiki/display/WD/Identity+providers
-        NODECONDUCTOR_SAML2 = {
+        WALDUR_AUTH_SAML2 = {
             # used for assigning the registration method to the user
             'name': 'saml2',
             # full path to the xmlsec1 binary program
@@ -74,42 +74,42 @@ class SAML2Extension(NodeConductorExtension):
         SAML_CREATE_UNKNOWN_USER = True
         SAML_DJANGO_USER_MAIN_ATTRIBUTE = 'username'
 
-        SAML_ATTRIBUTE_MAPPING = NODECONDUCTOR_SAML2['saml_attribute_mapping']
+        SAML_ATTRIBUTE_MAPPING = WALDUR_AUTH_SAML2['saml_attribute_mapping']
 
         SAML_CONFIG = {
             # full path to the xmlsec1 binary program
-            'xmlsec_binary': NODECONDUCTOR_SAML2['xmlsec_binary'],
+            'xmlsec_binary': WALDUR_AUTH_SAML2['xmlsec_binary'],
 
             # your entity id, usually your subdomain plus the url to the metadata view
-            'entityid': NODECONDUCTOR_SAML2['base_url'] + '/api-auth/saml2/metadata/',
+            'entityid': WALDUR_AUTH_SAML2['base_url'] + '/api-auth/saml2/metadata/',
 
-            'entity_category': NODECONDUCTOR_SAML2['categories'],
+            'entity_category': WALDUR_AUTH_SAML2['categories'],
 
             # directory with attribute mapping
-            'attribute_map_dir': NODECONDUCTOR_SAML2['attribute_map_dir'],
+            'attribute_map_dir': WALDUR_AUTH_SAML2['attribute_map_dir'],
 
             # this block states what services we provide
             'service': {
                 # we are just a lonely SP
                 'sp': {
                     # Indicates if the entity will sign the logout requests
-                    'logout_requests_signed': NODECONDUCTOR_SAML2['logout_requests_signed'],
+                    'logout_requests_signed': WALDUR_AUTH_SAML2['logout_requests_signed'],
                     # Indicates if the authentication requests sent should be signed by default
-                    'authn_requests_signed': NODECONDUCTOR_SAML2['authn_requests_signed'],
+                    'authn_requests_signed': WALDUR_AUTH_SAML2['authn_requests_signed'],
 
                     'endpoints': {
                         # url and binding to the assertion consumer service view
                         # do not change the binding or service name
                         'assertion_consumer_service': [
-                            (NODECONDUCTOR_SAML2['base_url'] + '/api-auth/saml2/login/complete/',
+                            (WALDUR_AUTH_SAML2['base_url'] + '/api-auth/saml2/login/complete/',
                              saml2.BINDING_HTTP_POST),
                         ],
                         # url and binding to the single logout service view
                         # do not change the binding or service name
                         'single_logout_service': [
-                            (NODECONDUCTOR_SAML2['base_url'] + '/api-auth/saml2/logout/complete/',
+                            (WALDUR_AUTH_SAML2['base_url'] + '/api-auth/saml2/logout/complete/',
                              saml2.BINDING_HTTP_REDIRECT),
-                            (NODECONDUCTOR_SAML2['base_url'] + '/api-auth/saml2/logout/complete/',
+                            (WALDUR_AUTH_SAML2['base_url'] + '/api-auth/saml2/logout/complete/',
                              saml2.BINDING_HTTP_POST),
                         ],
                     },
@@ -119,15 +119,15 @@ class SAML2Extension(NodeConductorExtension):
                             'UIInfo': {
                                 'display_name': {
                                     'lang': 'en',
-                                    'text': NODECONDUCTOR_SAML2['display_name'],
+                                    'text': WALDUR_AUTH_SAML2['display_name'],
                                 },
                                 'description': {
                                     'lang': 'en',
-                                    'text': NODECONDUCTOR_SAML2['description'],
+                                    'text': WALDUR_AUTH_SAML2['description'],
                                 },
                                 'privacy_statement_url': {
                                     'lang': 'en',
-                                    'text': NODECONDUCTOR_SAML2['privacy_statement_url'],
+                                    'text': WALDUR_AUTH_SAML2['privacy_statement_url'],
                                 },
                             },
                         },
@@ -135,19 +135,19 @@ class SAML2Extension(NodeConductorExtension):
                             'RegistrationInfo': {
                                 'registration_policy': {
                                     'lang': 'en',
-                                    'text': NODECONDUCTOR_SAML2['registration_policy'],
+                                    'text': WALDUR_AUTH_SAML2['registration_policy'],
                                 },
-                                'registrationAuthority': NODECONDUCTOR_SAML2['registration_authority'],
-                                'registrationInstant': NODECONDUCTOR_SAML2['registration_instant'],
+                                'registrationAuthority': WALDUR_AUTH_SAML2['registration_authority'],
+                                'registrationInstant': WALDUR_AUTH_SAML2['registration_instant'],
                             },
                         }
                     },
 
                     # attributes that this project needs to identify a user
-                    'required_attributes': NODECONDUCTOR_SAML2['required_attributes'],
+                    'required_attributes': WALDUR_AUTH_SAML2['required_attributes'],
 
                     # attributes that may be useful to have but not required
-                    'optional_attributes': NODECONDUCTOR_SAML2['optional_attributes'],
+                    'optional_attributes': WALDUR_AUTH_SAML2['optional_attributes'],
                 },
             },
 
@@ -155,19 +155,19 @@ class SAML2Extension(NodeConductorExtension):
             # See also: https://github.com/rohe/pysaml2/issues/216
             'metadata': [
                 {
-                    'class': 'nodeconductor_saml2.utils.DatabaseMetadataLoader',
-                    'metadata': [('nodeconductor_saml2.utils.DatabaseMetadataLoader',)],
+                    'class': 'waldur_auth_saml2.utils.DatabaseMetadataLoader',
+                    'metadata': [('waldur_auth_saml2.utils.DatabaseMetadataLoader',)],
                 },
             ],
 
-            'organization': NODECONDUCTOR_SAML2['organization'],
+            'organization': WALDUR_AUTH_SAML2['organization'],
 
             # set to 1 to output debugging information
-            'debug': int(NODECONDUCTOR_SAML2['debug']),
+            'debug': int(WALDUR_AUTH_SAML2['debug']),
 
             # signing
-            'key_file': NODECONDUCTOR_SAML2['key_file'],  # private part
-            'cert_file': NODECONDUCTOR_SAML2['cert_file'],  # public part
+            'key_file': WALDUR_AUTH_SAML2['key_file'],  # private part
+            'cert_file': WALDUR_AUTH_SAML2['cert_file'],  # public part
 
             'only_use_keys_in_metadata': False,
             'allow_unknown_attributes': True,
@@ -178,11 +178,11 @@ class SAML2Extension(NodeConductorExtension):
     @staticmethod
     def update_settings(settings):
         settings['AUTHENTICATION_BACKENDS'] += ('djangosaml2.backends.Saml2Backend',)
-        if settings['NODECONDUCTOR_SAML2']['log_file'] != '':
-            level = settings['NODECONDUCTOR_SAML2']['log_level'].upper()
+        if settings['WALDUR_AUTH_SAML2']['log_file'] != '':
+            level = settings['WALDUR_AUTH_SAML2']['log_level'].upper()
             settings['LOGGING']['handlers']['file-saml2'] = {
                 'class': 'logging.handlers.WatchedFileHandler',
-                'filename': settings['NODECONDUCTOR_SAML2']['log_file'],
+                'filename': settings['WALDUR_AUTH_SAML2']['log_file'],
                 'formatter': 'simple',
                 'level': level,
             }
@@ -203,12 +203,12 @@ class SAML2Extension(NodeConductorExtension):
         # Otherwise pysaml2 doesn't decrypt encrypted assertion.
         # See also: https://github.com/knaperek/djangosaml2/issues/22
         settings['SAML_CONFIG']['encryption_keypairs'] = [{
-            'key_file': settings['NODECONDUCTOR_SAML2']['key_file'],
-            'cert_file': settings['NODECONDUCTOR_SAML2']['cert_file'],
+            'key_file': settings['WALDUR_AUTH_SAML2']['key_file'],
+            'cert_file': settings['WALDUR_AUTH_SAML2']['cert_file'],
         }]
 
         # Implement backward-compatible style for remote metadata specification.
-        for remote in settings['NODECONDUCTOR_SAML2']['idp_metadata_remote']:
+        for remote in settings['WALDUR_AUTH_SAML2']['idp_metadata_remote']:
             settings['SAML_CONFIG']['metadata'].append({
                 'class': 'saml2.mdstore.MetaDataExtern',
                 'metadata': [(remote['url'], remote['cert'])]
@@ -216,7 +216,7 @@ class SAML2Extension(NodeConductorExtension):
 
     @staticmethod
     def django_app():
-        return 'nodeconductor_saml2'
+        return 'waldur_auth_saml2'
 
     @staticmethod
     def django_urls():
@@ -227,8 +227,8 @@ class SAML2Extension(NodeConductorExtension):
     def celery_tasks():
         from datetime import timedelta
         return {
-            'nodeconductor-saml2-sync-providers': {
-                'task': 'nodeconductor_saml2.sync_providers',
+            'waldur-auth-saml2-sync-providers': {
+                'task': 'waldur_auth_saml2.sync_providers',
                 'schedule': timedelta(minutes=60),
                 'args': (),
             },

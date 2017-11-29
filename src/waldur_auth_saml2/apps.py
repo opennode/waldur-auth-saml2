@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 
 
 class SAML2Config(AppConfig):
-    name = 'nodeconductor_saml2'
+    name = 'waldur_auth_saml2'
     verbose_name = 'Auth SAML2'
 
     def ready(self):
@@ -13,5 +13,5 @@ class SAML2Config(AppConfig):
         pre_user_save.connect(
             handlers.update_registration_method,
             sender=get_user_model(),
-            dispatch_uid='nodeconductor_saml2.handlers.update_registration_method',
+            dispatch_uid='waldur_auth_saml2.handlers.update_registration_method',
         )

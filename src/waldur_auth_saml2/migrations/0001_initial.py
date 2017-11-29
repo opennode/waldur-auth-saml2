@@ -3,6 +3,7 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
+import nodeconductor.core.fields
 
 
 class Migration(migrations.Migration):
@@ -19,6 +20,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.TextField(db_index=True)),
                 ('url', models.URLField()),
+                ('metadata', nodeconductor.core.fields.JSONField(default={}))
             ],
             options={
                 'ordering': ('name',),

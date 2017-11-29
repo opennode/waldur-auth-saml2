@@ -13,7 +13,7 @@ install_requires = [
 
 
 setup(
-    name='nodeconductor-saml2',
+    name='waldur-auth-saml2',
     version='0.8.2',
     author='OpenNode Team',
     author_email='info@opennodecloud.com',
@@ -30,7 +30,7 @@ setup(
     },
     entry_points={
         'nodeconductor_extensions': (
-            'nodeconductor_saml2 = nodeconductor_saml2.extension:SAML2Extension',
+            'waldur_auth_saml2 = waldur_auth_saml2.extension:SAML2Extension',
         ),
     },
     include_package_data=True,

@@ -21,7 +21,7 @@ class IdentityProviderAdmin(core_admin.ExtraActionsMixin, admin.ModelAdmin):
     def sync_providers(self, request):
         tasks.sync_providers()
         self.message_user(request, _('Identity providers have been synchronized.'))
-        return redirect(reverse('admin:nodeconductor_saml2_identityprovider_changelist'))
+        return redirect(reverse('admin:waldur_auth_saml2_identityprovider_changelist'))
 
 
 admin.site.register(models.IdentityProvider, IdentityProviderAdmin)

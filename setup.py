@@ -7,7 +7,7 @@ dev_requires = [
 ]
 
 install_requires = [
-    'nodeconductor>=0.146.4',
+    'waldur_core>=0.146.4',
     'djangosaml2==0.16.9',
 ]
 
@@ -29,7 +29,7 @@ setup(
         'dev': dev_requires,
     },
     entry_points={
-        'nodeconductor_extensions': (
+        'waldur_extensions': (
             'waldur_auth_saml2 = waldur_auth_saml2.extension:SAML2Extension',
         ),
     },

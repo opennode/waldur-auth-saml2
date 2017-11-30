@@ -1,6 +1,6 @@
 from django.db import models
 
-from nodeconductor.core import fields as core_fields
+from waldur_core.core import fields as core_fields
 
 
 class IdentityProvider(models.Model):

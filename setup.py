@@ -7,7 +7,7 @@ dev_requires = [
 ]
 
 install_requires = [
-    'waldur_core>=0.146.4',
+    'waldur-core>=0.151.0',
     'djangosaml2==0.16.9',
 ]
 

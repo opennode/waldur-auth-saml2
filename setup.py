@@ -7,14 +7,14 @@ dev_requires = [
 ]
 
 install_requires = [
-    'nodeconductor>=0.146.4',
+    'waldur-core>=0.151.0',
     'djangosaml2==0.16.9',
 ]
 
 
 setup(
     name='waldur-auth-saml2',
-    version='0.8.3',
+    version='0.8.4',
     author='OpenNode Team',
     author_email='info@opennodecloud.com',
     url='http://waldur.com',
@@ -29,7 +29,7 @@ setup(
         'dev': dev_requires,
     },
     entry_points={
-        'nodeconductor_extensions': (
+        'waldur_extensions': (
             'waldur_auth_saml2 = waldur_auth_saml2.extension:SAML2Extension',
         ),
     },

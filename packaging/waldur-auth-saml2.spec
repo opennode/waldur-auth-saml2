@@ -6,7 +6,7 @@
 Name: waldur-auth-saml2
 Summary: SAML2 plugin for Waldur
 Group: Development/Libraries
-Version: 0.8.3
+Version: 0.8.4
 Release: 1.el7
 License: MIT
 Url: http://waldur.com
@@ -14,7 +14,7 @@ Source0: %{name}-%{version}.tar.gz
 
 # openssl package is needed to generate SAML2 keys during plugin install
 # xmlsec1-openssl package is needed for SAML2 features to work
-Requires: waldur-core >= 0.146.4
+Requires: waldur-core >= 0.151.0
 Requires: openssl
 Requires: python-django-saml2 = 0.16.9
 Requires: xmlsec1-openssl
@@ -65,6 +65,9 @@ if [ "$1" = 1 ]; then
 fi
 
 %changelog
+* Fri Dec 1 2017 Jenkins <jenkins@opennodecloud.com> - 0.8.4-1.el7
+- New upstream release
+
 * Wed Nov 29 2017 Jenkins <jenkins@opennodecloud.com> - 0.8.3-1.el7
 - New upstream release
 

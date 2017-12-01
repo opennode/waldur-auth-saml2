@@ -3,7 +3,7 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
-from nodeconductor.core import admin as core_admin
+from waldur_core.core import admin as core_admin
 from . import models, tasks
 
 

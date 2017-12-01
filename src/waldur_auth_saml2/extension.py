@@ -3,10 +3,10 @@ import saml2
 
 from saml2.entity_category.edugain import COC
 
-from nodeconductor.core import NodeConductorExtension
+from waldur_core.core import WaldurExtension
 
 
-class SAML2Extension(NodeConductorExtension):
+class SAML2Extension(WaldurExtension):
 
     class Settings:
         # Read more: https://github.com/rohe/pysaml2-3/blob/master/doc/howto/config.rst

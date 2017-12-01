@@ -18,7 +18,7 @@ from saml2 import BINDING_HTTP_POST, BINDING_HTTP_REDIRECT
 from saml2.client import Saml2Client
 from saml2.xmldsig import SIG_RSA_SHA1
 
-from nodeconductor.core.views import RefreshTokenMixin
+from waldur_core.core.views import RefreshTokenMixin
 
 from . import filters, models, serializers, utils
 from .log import event_logger

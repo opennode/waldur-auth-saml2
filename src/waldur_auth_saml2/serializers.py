@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from nodeconductor.core.serializers import Base64Field
+from waldur_core.core.serializers import Base64Field
 from . import models, utils
 
 

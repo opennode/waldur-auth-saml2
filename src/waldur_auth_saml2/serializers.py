@@ -5,7 +5,7 @@ from . import models, utils
 
 
 class Saml2LoginSerializer(serializers.Serializer):
-    idp = serializers.URLField()
+    idp = serializers.CharField()
 
     def clean_idp(self, value):
         if utils.is_valid_idp(value):

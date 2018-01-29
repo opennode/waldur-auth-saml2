@@ -32,9 +32,11 @@ def sync_providers():
     for url, metadata in providers.items():
         name = get_idp_name(metadata)
         if not name:
-            # It is expected that every provider has name.
-            # Skip invalid identity provider
-            continue
+            # It is expected that every provider has name. For corner cases check entity_id
+            name = metadata.get('entity_id')
+            if not name:
+                # Skip invalid identity provider
+                continue
         if url in existing_urls:
             # Skip identity provider if its url is already in the database
             continue

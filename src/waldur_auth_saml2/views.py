@@ -94,7 +94,7 @@ class Saml2LoginView(APIView):
             kwargs['sign'] = True
             kwargs['sigalg'] = signature_algorithm
             kwargs['sign_alg'] = signature_algorithm
-            kwargs['digest_algorithm'] = digest_algorithm
+            kwargs['digest_alg'] = digest_algorithm
 
         session_id, result = client.prepare_for_authenticate(
             entityid=idp, binding=binding, **kwargs)

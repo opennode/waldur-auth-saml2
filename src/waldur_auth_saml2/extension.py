@@ -35,6 +35,12 @@ class SAML2Extension(WaldurExtension):
             'logout_requests_signed': 'true',
             # Indicates if the authentication requests sent should be signed by default
             'authn_requests_signed': 'true',
+            # Identifies the Signature algorithm URL according to the XML Signature specification
+            # SHA1 is used by default
+            'signature_algorithm': None,
+            # Identifies the Message Digest algorithm URL according to the XML Signature specification
+            # SHA1 is used by default
+            'digest_algorithm': None,
             # PEM formatted certificate chain file
             'cert_file': '',
             # PEM formatted certificate key file

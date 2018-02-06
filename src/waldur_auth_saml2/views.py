@@ -16,7 +16,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
 from saml2 import BINDING_HTTP_POST, BINDING_HTTP_REDIRECT
 from saml2.client import Saml2Client
-from saml2.xmldsig import SIG_RSA_SHA1
+from saml2.xmldsig import SIG_RSA_SHA1, DIGEST_SHA1
 
 from waldur_core.core.views import RefreshTokenMixin
 
@@ -75,7 +75,6 @@ class Saml2LoginView(APIView):
         idp = serializer.validated_data.get('idp')
 
         conf = get_config(request=request)
-        sign_requests = getattr(conf, '_sp_authn_requests_signed', False)
 
         # ensure our selected binding is supported by the IDP
         supported_bindings = utils.get_idp_sso_supported_bindings(idp, config=conf)
@@ -85,9 +84,20 @@ class Saml2LoginView(APIView):
             return login_failed(_('Identity provider does not support available bindings.'))
 
         client = Saml2Client(conf)
-        sigalg = SIG_RSA_SHA1 if sign_requests else None
+
+        kwargs = {}
+        sign_requests = getattr(conf, '_sp_authn_requests_signed', False)
+        if sign_requests:
+            signature_algorithm = settings.WALDUR_AUTH_SAML2.get('signature_algorithm') or SIG_RSA_SHA1
+            digest_algorithm = settings.WALDUR_AUTH_SAML2.get('digest_algorithm') or DIGEST_SHA1
+
+            kwargs['sign'] = True
+            kwargs['sigalg'] = signature_algorithm
+            kwargs['sign_alg'] = signature_algorithm
+            kwargs['digest_alg'] = digest_algorithm
+
         session_id, result = client.prepare_for_authenticate(
-            entityid=idp, binding=binding, sign=False, sigalg=sigalg)
+            entityid=idp, binding=binding, **kwargs)
 
         # save session_id
         oq_cache = OutstandingQueriesCache(request.session)

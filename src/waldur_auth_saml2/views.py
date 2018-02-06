@@ -16,7 +16,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
 from saml2 import BINDING_HTTP_POST, BINDING_HTTP_REDIRECT
 from saml2.client import Saml2Client
-from saml2.xmldsig import SIG_RSA_SHA1
+from saml2.xmldsig import SIG_RSA_SHA1, DIGEST_SHA1
 
 from waldur_core.core.views import RefreshTokenMixin
 
@@ -89,7 +89,7 @@ class Saml2LoginView(APIView):
         sign_requests = getattr(conf, '_sp_authn_requests_signed', False)
         if sign_requests:
             signature_algorithm = settings.WALDUR_AUTH_SAML2.get('signature_algorithm') or SIG_RSA_SHA1
-            digest_algorithm = settings.WALDUR_AUTH_SAML2.get('digest_algorithm') or SIG_RSA_SHA1
+            digest_algorithm = settings.WALDUR_AUTH_SAML2.get('digest_algorithm') or DIGEST_SHA1
 
             kwargs['sign'] = True
             kwargs['sigalg'] = signature_algorithm

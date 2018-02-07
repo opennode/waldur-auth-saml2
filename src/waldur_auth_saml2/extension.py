@@ -41,6 +41,8 @@ class SAML2Extension(WaldurExtension):
             # Identifies the Message Digest algorithm URL according to the XML Signature specification
             # SHA1 is used by default
             'digest_algorithm': None,
+            # Identified NameID format to use. None means default, empty string ("") disables addition of entity
+            'nameid_format': None,
             # PEM formatted certificate chain file
             'cert_file': '',
             # PEM formatted certificate key file

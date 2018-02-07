@@ -96,6 +96,10 @@ class Saml2LoginView(APIView):
             kwargs['sign_alg'] = signature_algorithm
             kwargs['digest_alg'] = digest_algorithm
 
+        nameid_format = settings.WALDUR_AUTH_SAML2.get('nameid_format')
+        if nameid_format or nameid_format == "":  # "" is a valid setting in pysaml2
+            kwargs['nameid_format'] = nameid_format
+
         session_id, result = client.prepare_for_authenticate(
             entityid=idp, binding=binding, **kwargs)
 

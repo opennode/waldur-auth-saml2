@@ -70,12 +70,6 @@ class SAML2Extension(WaldurExtension):
             'registration_policy': 'http://example.com/#/registration-policy/',
             'registration_authority': 'http://example.com/#/registration-authority/',
             'registration_instant': datetime.datetime(2017, 1, 1).isoformat(),
-
-            # Callback URL
-            'LOGIN_COMPLETED_URL': 'http://example.com/#/login_complete/{token}/',
-            'LOGIN_FAILED_URL': 'http://example.com/#/login_failed/',
-            'LOGOUT_COMPLETED_URL': 'http://example.com/#/logout_completed/',
-            'LOGOUT_FAILED_URL': 'http://example.com/#/logout_failed/',
         }
 
         # These shouldn't be configurable by user -- see SAML2 section for details

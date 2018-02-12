@@ -1,6 +1,5 @@
 import logging
 
-import six
 from django.conf import settings
 from django.contrib import auth
 from django.http import HttpResponseRedirect
@@ -18,39 +17,15 @@ from saml2 import BINDING_HTTP_POST, BINDING_HTTP_REDIRECT
 from saml2.client import Saml2Client
 from saml2.xmldsig import SIG_RSA_SHA1, DIGEST_SHA1
 
-from waldur_core.core.views import RefreshTokenMixin
+from waldur_core.core.views import (
+    login_failed, login_completed, logout_failed, logout_completed, RefreshTokenMixin
+)
 
 from . import filters, models, serializers, utils
 from .log import event_logger
 
 
 logger = logging.getLogger(__name__)
-
-
-def redirect_with(url_template, **kwargs):
-    params = six.moves.urllib.parse.urlencode(kwargs)
-    url = '%s?%s' % (url_template, params)
-    return HttpResponseRedirect(url)
-
-
-def login_completed(token):
-    url_template = settings.WALDUR_AUTH_SAML2['LOGIN_COMPLETED_URL']
-    url = url_template.format(token=token)
-    return HttpResponseRedirect(url)
-
-
-def login_failed(message):
-    url_template = settings.WALDUR_AUTH_SAML2['LOGIN_FAILED_URL']
-    return redirect_with(url_template, message=message)
-
-
-def logout_completed():
-    return HttpResponseRedirect(settings.WALDUR_AUTH_SAML2['LOGOUT_COMPLETED_URL'])
-
-
-def logout_failed(message):
-    url_template = settings.WALDUR_AUTH_SAML2['LOGOUT_FAILED_URL']
-    return redirect_with(url_template, message=message)
 
 
 class Saml2LoginView(APIView):
@@ -191,7 +166,7 @@ class Saml2LoginCompleteView(RefreshTokenMixin, APIView):
             'User {user_username} with full name {user_full_name} logged in successfully with SAML2.',
             event_type='auth_logged_in_with_saml2', event_context={'user': user}
         )
-        return login_completed(token.key)
+        return login_completed(token.key, 'saml2')
 
 
 class Saml2LogoutView(APIView):

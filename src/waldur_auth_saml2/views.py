@@ -10,9 +10,11 @@ from djangosaml2.conf import get_config
 from djangosaml2.signals import post_authenticated
 from djangosaml2.utils import get_custom_setting, get_location
 from djangosaml2.views import _set_subject_id, _get_subject_id
+from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
+from rest_framework.response import Response
 from saml2 import BINDING_HTTP_POST, BINDING_HTTP_REDIRECT
 from saml2.client import Saml2Client
 from saml2.xmldsig import SIG_RSA_SHA1, DIGEST_SHA1
@@ -177,23 +179,33 @@ class Saml2LogoutView(APIView):
     """
     throttle_classes = ()
 
-    def get(self, request):
+    def post(self, request):
         state = StateCache(request.session)
         conf = get_config(request=request)
 
         client = Saml2Client(conf, state_cache=state, identity_cache=IdentityCache(request.session))
         subject_id = _get_subject_id(request.session)
         if subject_id is None:
-            return logout_failed(_('You cannot be logged out.'))
+            return Response(
+                data={'detail': _('You cannot be logged out.')},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         result = client.global_logout(subject_id)
         state.sync()
         if not result:
-            return logout_failed(_('You are not logged in any IdP/AA.'))
+            return Response(
+                data={'detail': _('You are not logged in any IdP/AA.')},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         # Logout is supported only from 1 IdP
         binding, http_info = result.values()[0]
-        return HttpResponseRedirect(get_location(http_info))
+        location = get_location(http_info)
+        return Response(
+            data={'location': location},
+            status=status.HTTP_200_OK,
+        )
 
 
 class Saml2LogoutCompleteView(APIView):

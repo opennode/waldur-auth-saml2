@@ -70,6 +70,8 @@ class SAML2Extension(WaldurExtension):
             'registration_policy': 'http://example.com/#/registration-policy/',
             'registration_authority': 'http://example.com/#/registration-authority/',
             'registration_instant': datetime.datetime(2017, 1, 1).isoformat(),
+
+            'ENABLE_SINGLE_LOGOUT': False,
         }
 
         # These shouldn't be configurable by user -- see SAML2 section for details
@@ -215,6 +217,10 @@ class SAML2Extension(WaldurExtension):
                 'class': 'saml2.mdstore.MetaDataExtern',
                 'metadata': [(remote['url'], remote['cert'])]
             })
+
+    @staticmethod
+    def get_public_settings():
+        return ['ENABLE_SINGLE_LOGOUT']
 
     @staticmethod
     def django_app():

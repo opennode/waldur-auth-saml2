@@ -159,7 +159,7 @@ class Saml2LoginCompleteView(RefreshTokenMixin, APIView):
         # required for validating SAML2 logout requests
         auth.login(request, user)
         _set_subject_id(request.session, session_info['name_id'])
-        logger.debug("User %s authenticated via SSO.", user)
+        logger.debug('User %s authenticated via SSO.', user)
 
         logger.debug('Sending the post_authenticated signal')
         post_authenticated.send_robust(sender=user, session_info=session_info)

@@ -14,7 +14,7 @@ install_requires = [
 
 setup(
     name='waldur-auth-saml2',
-    version='0.8.8',
+    version='0.9.0',
     author='OpenNode Team',
     author_email='info@opennodecloud.com',
     url='http://waldur.com',

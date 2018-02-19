@@ -18,14 +18,16 @@ from saml2.client import Saml2Client
 from saml2.xmldsig import SIG_RSA_SHA1, DIGEST_SHA1
 
 from waldur_core.core.views import (
-    login_failed, login_completed, logout_failed, logout_completed, RefreshTokenMixin
-)
+    login_failed, login_completed, logout_failed, logout_completed, RefreshTokenMixin,
+    validate_authentication_method)
 
 from . import filters, models, serializers, utils
 from .log import event_logger
 
 
 logger = logging.getLogger(__name__)
+
+validate_saml2 = validate_authentication_method('SAML2')
 
 
 class Saml2LoginView(APIView):
@@ -40,6 +42,7 @@ class Saml2LoginView(APIView):
     permission_classes = ()
     serializer_class = serializers.Saml2LoginSerializer
 
+    @validate_saml2
     @csrf_exempt
     def post(self, request):
         if not self.request.user.is_anonymous:
@@ -99,6 +102,7 @@ class Saml2LoginCompleteView(RefreshTokenMixin, APIView):
     permission_classes = ()
     serializer_class = serializers.Saml2LoginCompleteSerializer
 
+    @validate_saml2
     @csrf_exempt
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
@@ -181,6 +185,7 @@ class Saml2LogoutView(APIView):
     """
     throttle_classes = ()
 
+    @validate_saml2
     def get(self, request):
         state = StateCache(request.session)
         conf = get_config(request=request)
@@ -211,6 +216,7 @@ class Saml2LogoutCompleteView(APIView):
     throttle_classes = ()
     serializer_class = serializers.Saml2LogoutCompleteSerializer
 
+    @validate_saml2
     def get(self, request):
         """
         For IdPs which send GET requests
@@ -219,6 +225,7 @@ class Saml2LogoutCompleteView(APIView):
         serializer.is_valid(raise_exception=True)
         return self.logout(request, serializer.validated_data, BINDING_HTTP_REDIRECT)
 
+    @validate_saml2
     @csrf_exempt
     def post(self, request):
         """

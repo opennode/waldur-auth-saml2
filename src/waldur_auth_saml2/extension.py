@@ -72,6 +72,9 @@ class SAML2Extension(WaldurExtension):
             'registration_instant': datetime.datetime(2017, 1, 1).isoformat(),
 
             'ENABLE_SINGLE_LOGOUT': False,
+            'ALLOW_TO_SELECT_IDENTITY_PROVIDER': True,
+            'IDENTITY_PROVIDER_URL': None,
+            'IDENTITY_PROVIDER_LABEL': None,
         }
 
         # These shouldn't be configurable by user -- see SAML2 section for details
@@ -220,7 +223,12 @@ class SAML2Extension(WaldurExtension):
 
     @staticmethod
     def get_public_settings():
-        return ['ENABLE_SINGLE_LOGOUT']
+        return [
+            'ENABLE_SINGLE_LOGOUT',
+            'ALLOW_TO_SELECT_IDENTITY_PROVIDER',
+            'IDENTITY_PROVIDER_URL',
+            'IDENTITY_PROVIDER_LABEL',
+        ]
 
     @staticmethod
     def django_app():

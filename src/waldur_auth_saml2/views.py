@@ -4,7 +4,6 @@ from django.conf import settings
 from django.contrib import auth
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
-from django.views.decorators.csrf import csrf_exempt
 from djangosaml2.cache import OutstandingQueriesCache, IdentityCache, StateCache
 from djangosaml2.conf import get_config
 from djangosaml2.signals import post_authenticated
@@ -30,7 +29,13 @@ logger = logging.getLogger(__name__)
 validate_saml2 = validate_authentication_method('SAML2')
 
 
-class Saml2LoginView(APIView):
+class BaseSaml2View(APIView):
+    throttle_classes = ()
+    permission_classes = ()
+    authentication_classes = ()
+
+
+class Saml2LoginView(BaseSaml2View):
     """
     SAML Authorization endpoint
     
@@ -38,12 +43,9 @@ class Saml2LoginView(APIView):
     redirects them to corresponding IdP authorization page.
     The "metadata" has to be set in SAML_CONFIG in settings.py
     """
-    throttle_classes = ()
-    permission_classes = ()
     serializer_class = serializers.Saml2LoginSerializer
 
     @validate_saml2
-    @csrf_exempt
     def post(self, request):
         if not self.request.user.is_anonymous:
             return login_failed(_('This endpoint is for anonymous users only.'))
@@ -88,7 +90,7 @@ class Saml2LoginView(APIView):
         return HttpResponseRedirect(get_location(result))
 
 
-class Saml2LoginCompleteView(RefreshTokenMixin, APIView):
+class Saml2LoginCompleteView(RefreshTokenMixin, BaseSaml2View):
     """
     SAML Authorization Response endpoint
 
@@ -98,12 +100,9 @@ class Saml2LoginCompleteView(RefreshTokenMixin, APIView):
     djangosaml2.backends.Saml2Backend that should be
     enabled in the settings.py
     """
-    throttle_classes = ()
-    permission_classes = ()
     serializer_class = serializers.Saml2LoginCompleteSerializer
 
     @validate_saml2
-    @csrf_exempt
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -177,13 +176,12 @@ class Saml2LoginCompleteView(RefreshTokenMixin, APIView):
         return login_completed(token.key, 'saml2')
 
 
-class Saml2LogoutView(APIView):
+class Saml2LogoutView(BaseSaml2View):
     """
     SAML Logout endpoint
 
     This view redirects users to corresponding IdP page for the logout.
     """
-    throttle_classes = ()
 
     @validate_saml2
     def get(self, request):
@@ -205,7 +203,7 @@ class Saml2LogoutView(APIView):
         return HttpResponseRedirect(get_location(http_info))
 
 
-class Saml2LogoutCompleteView(APIView):
+class Saml2LogoutCompleteView(BaseSaml2View):
     """
     SAML Logout Response endpoint
 
@@ -213,7 +211,6 @@ class Saml2LogoutCompleteView(APIView):
     will logout the user and remove authorization token.
     """
 
-    throttle_classes = ()
     serializer_class = serializers.Saml2LogoutCompleteSerializer
 
     @validate_saml2
@@ -226,7 +223,6 @@ class Saml2LogoutCompleteView(APIView):
         return self.logout(request, serializer.validated_data, BINDING_HTTP_REDIRECT)
 
     @validate_saml2
-    @csrf_exempt
     def post(self, request):
         """
         For IdPs which send POST requests

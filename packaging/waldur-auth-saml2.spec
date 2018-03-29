@@ -6,7 +6,7 @@
 Name: waldur-auth-saml2
 Summary: SAML2 plugin for Waldur
 Group: Development/Libraries
-Version: 0.9.1
+Version: 0.9.2
 Release: 1.el7
 License: MIT
 Url: http://waldur.com
@@ -65,6 +65,9 @@ if [ "$1" = 1 ]; then
 fi
 
 %changelog
+* Thu Mar 29 2018 Jenkins <jenkins@opennodecloud.com> - 0.9.2-1.el7
+- New upstream release
+
 * Mon Feb 26 2018 Jenkins <jenkins@opennodecloud.com> - 0.9.1-1.el7
 - New upstream release
 

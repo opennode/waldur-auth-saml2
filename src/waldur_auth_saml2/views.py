@@ -38,8 +38,8 @@ class BaseSaml2View(APIView):
 class Saml2LoginView(BaseSaml2View):
     """
     SAML Authorization endpoint
-    
-    This view receives authorization requests from users and 
+
+    This view receives authorization requests from users and
     redirects them to corresponding IdP authorization page.
     The "metadata" has to be set in SAML_CONFIG in settings.py
     """
@@ -240,7 +240,7 @@ class Saml2LogoutCompleteView(BaseSaml2View):
 
         if 'SAMLResponse' in data:
             # Logout started by us
-            response = client.parse_logout_request_response(data['SAMLResponse'], binding)
+            client.parse_logout_request_response(data['SAMLResponse'], binding)
             http_response = logout_completed()
         else:
             # Logout started by IdP

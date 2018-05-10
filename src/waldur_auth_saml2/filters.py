@@ -1,6 +1,6 @@
 import django_filters
 
-from  . import models
+from . import models
 
 
 class IdentityProviderFilter(django_filters.FilterSet):

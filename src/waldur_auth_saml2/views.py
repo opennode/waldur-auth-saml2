@@ -38,8 +38,8 @@ class BaseSaml2View(APIView):
 class Saml2LoginView(BaseSaml2View):
     """
     SAML Authorization endpoint
-    
-    This view receives authorization requests from users and 
+
+    This view receives authorization requests from users and
     redirects them to corresponding IdP authorization page.
     The "metadata" has to be set in SAML_CONFIG in settings.py
     """
@@ -193,7 +193,11 @@ class Saml2LogoutView(BaseSaml2View):
         if subject_id is None:
             return logout_failed(_('You cannot be logged out.'))
 
-        result = client.global_logout(subject_id)
+        try:
+            result = client.global_logout(subject_id)
+        except KeyError:
+            return logout_failed(_('You are not logged in any IdP/AA.'))
+
         state.sync()
         if not result:
             return logout_failed(_('You are not logged in any IdP/AA.'))
@@ -240,7 +244,7 @@ class Saml2LogoutCompleteView(BaseSaml2View):
 
         if 'SAMLResponse' in data:
             # Logout started by us
-            response = client.parse_logout_request_response(data['SAMLResponse'], binding)
+            client.parse_logout_request_response(data['SAMLResponse'], binding)
             http_response = logout_completed()
         else:
             # Logout started by IdP
@@ -254,6 +258,8 @@ class Saml2LogoutCompleteView(BaseSaml2View):
 
         state.sync()
         user = request.user
+        if user.is_anonymous:
+            return http_response
         Token.objects.get(user=user).delete()
         auth.logout(request)
         event_logger.saml2_auth.info(

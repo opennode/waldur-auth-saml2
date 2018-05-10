@@ -193,7 +193,11 @@ class Saml2LogoutView(BaseSaml2View):
         if subject_id is None:
             return logout_failed(_('You cannot be logged out.'))
 
-        result = client.global_logout(subject_id)
+        try:
+            result = client.global_logout(subject_id)
+        except KeyError:
+            return logout_failed(_('You are not logged in any IdP/AA.'))
+
         state.sync()
         if not result:
             return logout_failed(_('You are not logged in any IdP/AA.'))
@@ -254,6 +258,8 @@ class Saml2LogoutCompleteView(BaseSaml2View):
 
         state.sync()
         user = request.user
+        if user.is_anonymous:
+            return http_response
         Token.objects.get(user=user).delete()
         auth.logout(request)
         event_logger.saml2_auth.info(

@@ -75,6 +75,7 @@ class SAML2Extension(WaldurExtension):
             'ALLOW_TO_SELECT_IDENTITY_PROVIDER': True,
             'IDENTITY_PROVIDER_URL': None,
             'IDENTITY_PROVIDER_LABEL': None,
+            'DEFAULT_BINDING': saml2.BINDING_HTTP_POST,
         }
 
         # These shouldn't be configurable by user -- see SAML2 section for details

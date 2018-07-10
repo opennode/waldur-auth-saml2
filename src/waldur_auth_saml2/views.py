@@ -1,8 +1,9 @@
+import base64
 import logging
 
 from django.conf import settings
 from django.contrib import auth
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.utils.translation import ugettext_lazy as _
 from djangosaml2.cache import OutstandingQueriesCache, IdentityCache, StateCache
 from djangosaml2.conf import get_config
@@ -48,7 +49,8 @@ class Saml2LoginView(BaseSaml2View):
     @validate_saml2
     def post(self, request):
         if not self.request.user.is_anonymous:
-            return login_failed(_('This endpoint is for anonymous users only.'))
+            error_message = _('This endpoint is for anonymous users only.')
+            return JsonResponse({'error_message': error_message}, status_code=400)
 
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -58,10 +60,17 @@ class Saml2LoginView(BaseSaml2View):
 
         # ensure our selected binding is supported by the IDP
         supported_bindings = utils.get_idp_sso_supported_bindings(idp, config=conf)
-        if BINDING_HTTP_REDIRECT in supported_bindings:
+        default_binding = settings.WALDUR_AUTH_SAML2.get('DEFAULT_BINDING')
+
+        if default_binding in supported_bindings:
+            binding = default_binding
+        elif BINDING_HTTP_POST in supported_bindings:
+            binding = BINDING_HTTP_POST
+        elif BINDING_HTTP_REDIRECT in supported_bindings:
             binding = BINDING_HTTP_REDIRECT
         else:
-            return login_failed(_('Identity provider does not support available bindings.'))
+            error_message = _('Identity provider does not support available bindings.')
+            return JsonResponse({'error_message': error_message}, status_code=400)
 
         client = Saml2Client(conf)
 
@@ -80,14 +89,33 @@ class Saml2LoginView(BaseSaml2View):
         if nameid_format or nameid_format == "":  # "" is a valid setting in pysaml2
             kwargs['nameid_format'] = nameid_format
 
-        session_id, result = client.prepare_for_authenticate(
-            entityid=idp, binding=binding, **kwargs)
+        if binding == BINDING_HTTP_REDIRECT:
+            session_id, result = client.prepare_for_authenticate(
+                entityid=idp, binding=binding, **kwargs)
+
+            data = {
+                'binding': 'redirect',
+                'url': get_location(result),
+            }
+        elif binding == BINDING_HTTP_POST:
+            try:
+                location = client.sso_location(idp, binding)
+            except TypeError:
+                error_message = _('Invalid identity provider specified.')
+                return JsonResponse({'error_message': error_message}, status_code=400)
+
+            session_id, request_xml = client.create_authn_request(location, binding=binding)
+            data = {
+                'binding': 'post',
+                'url': location,
+                'request': base64.b64encode(request_xml.encode('UTF-8')),
+            }
 
         # save session_id
         oq_cache = OutstandingQueriesCache(request.session)
         oq_cache.set(session_id, '')
 
-        return HttpResponseRedirect(get_location(result))
+        return JsonResponse(data)
 
 
 class Saml2LoginCompleteView(RefreshTokenMixin, BaseSaml2View):

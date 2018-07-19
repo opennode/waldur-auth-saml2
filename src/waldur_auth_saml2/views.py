@@ -15,6 +15,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
 from saml2 import BINDING_HTTP_POST, BINDING_HTTP_REDIRECT
 from saml2.client import Saml2Client
+from saml2.response import StatusRequestDenied
 from saml2.xmldsig import SIG_RSA_SHA1, DIGEST_SHA1
 
 from waldur_core.core.views import (
@@ -104,7 +105,7 @@ class Saml2LoginView(BaseSaml2View):
                 error_message = _('Invalid identity provider specified.')
                 return JsonResponse({'error_message': error_message}, status_code=400)
 
-            session_id, request_xml = client.create_authn_request(location, binding=binding)
+            session_id, request_xml = client.create_authn_request(location, binding=binding, **kwargs)
             data = {
                 'binding': 'post',
                 'url': location,
@@ -152,6 +153,9 @@ class Saml2LoginCompleteView(RefreshTokenMixin, BaseSaml2View):
         try:
             response = client.parse_authn_request_response(xmlstr, BINDING_HTTP_POST, outstanding_queries)
         except Exception as e:
+            if isinstance(e, StatusRequestDenied):
+                return login_failed(_('Authentication request has been denied by identity provider. '
+                                      'Please check your credentials.'))
             logger.error('SAML response parsing failed %s' % e)
             return login_failed(_('SAML2 response has errors.'))
 
